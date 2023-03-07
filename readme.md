@@ -38,10 +38,12 @@ Install dependency in client project. Use `npm install:client:dev` for dev depen
 
 ### `npm run server`
 
-Run command on server project. test
+Run command on server project
 
 ### `npm run install:server`
 
 Install dependency in server project. Use `npm install:server:dev` for dev dependencies.
 
+
 doremi test
+

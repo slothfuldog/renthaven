@@ -38,7 +38,7 @@ Install dependency in client project. Use `npm install:client:dev` for dev depen
 
 ### `npm run server`
 
-Run command on server project.
+Run command on server project. test
 
 ### `npm run install:server`
 

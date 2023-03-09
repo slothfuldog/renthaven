@@ -44,6 +44,5 @@ Run command on server project
 
 Install dependency in server project. Use `npm install:server:dev` for dev dependencies.
 
-
-doremi test
-
+testing 2
+testing 3

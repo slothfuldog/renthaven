@@ -3,8 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 
+
 const PORT = process.env.PORT || 8000;
 const app = express();
+app.use(cors())
 app.use(
   cors({
     origin: [
@@ -20,16 +22,9 @@ app.use(express.json());
 
 // ===========================
 // NOTE : Add your routes here
-
-app.get("/api", (req, res) => {
-  res.send(`Hello, this is my API`);
-});
-
-app.get("/api/greetings", (req, res, next) => {
-  res.status(200).json({
-    message: "Hello, Student !",
-  });
-});
+const userRoute = require("./router/userRouter");
+const { dbSequelize } = require("./config/db");
+app.use('/api', userRoute)
 
 // ===========================
 
@@ -72,3 +67,5 @@ app.listen(PORT, (err) => {
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });
+
+dbSequelize.sync();

@@ -3,7 +3,7 @@ import {Routes, Route} from "react-router-dom";
 import "./App.css";
 import { useEffect, useState } from "react";
 import SignupPanelPage from "./pages/SignupPanel";
-import SigninPanelPage from "./components/SigninPanel";
+import SigninPanelPage from "./pages/SigninPanel";
 
 function App() {
   const [message, setMessage] = useState("");

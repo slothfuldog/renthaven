@@ -61,11 +61,11 @@ propertyModel.belongsTo(tenantModel, {
     foreignKey: "tenantId"
 })
 
-propertyModel.hasMany(categoryModel, {
+categoryModel.hasMany(propertyModel, {
     foreignKey: "categoryId"
 })
 
-categoryModel.belongsTo(propertyModel, {
+propertyModel.belongsTo(categoryModel, {
     as: "category",
     foreignKey: "categoryId"
 })

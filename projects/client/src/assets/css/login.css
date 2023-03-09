@@ -1,0 +1,33 @@
+.link:hover{
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+.overlay{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1050;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.301);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: all ease-in-out 0.4s;
+}
+
+
+@media only screen and (min-width: 0px){
+    .mobile{
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-width: 760px){
+    .mobile{
+        margin: 0px auto 20px;
+        width: 50%;
+    }
+}

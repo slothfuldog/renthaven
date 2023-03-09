@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { auth, provider, providerFacebook } from "../config/firebase";
@@ -27,8 +27,13 @@ import { basicSchema } from "../schemas/signupValidator";
 import Swal from "sweetalert2";
 
 const SignupUserPage = (props) => {
+  const location = useLocation();
   const [show, setShow] = useState(false);
-  const [alerts, setAlert] = useState("");
+  const [alerts, setAlert] = useState(
+    location.state == null || location.state == undefined
+      ? ""
+      : location.state.alert
+  );
   const [normalReg, setReg] = useState("common");
   const [googleLoading, setGoogleLoading] = useState(false);
   const [facebookLoading, setFacebookLoading] = useState(false);
@@ -218,7 +223,6 @@ const SignupUserPage = (props) => {
               </p>
               <FormControl isRequired>
                 <Input
-                  focusBorderColor="green.400"
                   isInvalid={errors.name && touched.name ? true : false}
                   id="name"
                   style={{ marginTop: "5px" }}
@@ -239,7 +243,6 @@ const SignupUserPage = (props) => {
               </p>
               <FormControl isRequired>
                 <Input
-                  focusBorderColor="green.400"
                   isInvalid={errors.email && touched.email ? true : false}
                   id="email"
                   style={{ marginTop: "5px" }}
@@ -260,7 +263,6 @@ const SignupUserPage = (props) => {
               </p>
               <FormControl isRequired>
                 <Input
-                  focusBorderColor="green.400"
                   isInvalid={errors.phone && touched.phone ? true : false}
                   id="phone"
                   value={values.phone}
@@ -283,7 +285,6 @@ const SignupUserPage = (props) => {
                   <FormControl isRequired>
                     <InputGroup size="md" style={{ marginTop: "5px" }}>
                       <Input
-                        focusBorderColor="green.400"
                         isInvalid={
                           errors.password && touched.password ? true : false
                         }
@@ -313,7 +314,6 @@ const SignupUserPage = (props) => {
                   <FormControl isRequired>
                     <InputGroup size="md" style={{ marginTop: "5px" }}>
                       <Input
-                        focusBorderColor="green.400"
                         isInvalid={
                           errors.confirmPassword && touched.confirmPassword
                             ? true

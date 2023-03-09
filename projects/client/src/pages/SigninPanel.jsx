@@ -1,4 +1,5 @@
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import SigninUserPage from "../components/SigninUser";
 
 const SigninPanelPage = (props) => {
   return (
@@ -25,7 +26,7 @@ const SigninPanelPage = (props) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            asdasdasd
+            <SigninUserPage />
           </TabPanel>
           <TabPanel>
             <p>two!</p>

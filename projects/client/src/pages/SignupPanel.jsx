@@ -1,10 +1,10 @@
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import "../assets/css/login.css"
+import "../styles/login.css"
 import SignupUserPage from "../components/SignupUser";
 
 const SignupPanelPage = (props) => {
   return (
-    <Box boxShadow="dark-lg" className="mobile" rounded="md">
+    <Box boxShadow="dark-lg" className="mobile" rounded={{base: 'none', md: "md"}}>
       <p
         style={{
           fontSize: "28px",

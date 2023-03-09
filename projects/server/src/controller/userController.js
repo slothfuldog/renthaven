@@ -44,7 +44,7 @@ module.exports = {
             console.log(error);
             res.status(501).send({
                 success: false,
-                message: req.body.name
+                message: "Database error"
             })
         }
     },
@@ -78,8 +78,7 @@ module.exports = {
                 }
             })
             let token = createToken({
-                ...data,
-                login: req.body.login
+                ...data
             });
             if (data.length > 0) {
                 if (req.body.login == "firebase") {
@@ -99,19 +98,19 @@ module.exports = {
                             token
                         })
                     } else {
-                        res.status(403).send({
+                        res.status(200).send({
                             success: false,
                             message: "Username or password invalid"
                         })
                     }
                 } else {
-                    res.status(403).send({
+                    res.status(200).send({
                         success: false,
                         message: "Username or password invalid"
                     })
                 }
             } else {
-                res.status(403).send({
+                res.status(200).send({
                     success: false,
                     message: "Username or password invalid"
                 })
@@ -124,5 +123,30 @@ module.exports = {
                 error
             })
         }
-    }
+    },
+    keepLogin: async (req, res) => {
+        try {
+            const data = await userModel.findAll({
+                where: {
+                    email: req.decrypt.email
+                }
+            })
+            let token = createToken({
+                ...data
+            });
+            if(data.length > 0){
+                return res.status(200).send({
+                success: true,
+                result: data[0],
+                token
+            }) 
+            }
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({
+                success: false,
+                message: "Database Error"
+            });
+        }
+    },
 }

@@ -1,12 +1,14 @@
 require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
+const bearer = require("express-bearer-token")
 const { join } = require("path");
 
 
 const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(cors())
+app.use(bearer())
 app.use(
   cors({
     origin: [

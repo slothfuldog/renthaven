@@ -1,0 +1,23 @@
+.landing-bannner .swiper-button-prev {
+  color: #0069a3;
+}
+
+.landing-bannner .swiper-button-next {
+  color: #0069a3;
+}
+
+.landing-bannner .swiper-slide {
+  margin: auto;
+}
+
+.main-content .swiper-slide {
+  margin: 12px 12px;
+}
+
+.main-content .swiper-button-next {
+  color: #0069a3;
+}
+
+.main-content .swiper-button-prev {
+  color: #0069a3;
+}

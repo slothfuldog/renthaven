@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.calendarWrap {
+  position: relative;
+}
+
+.calendarElement {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 50px;
+  border: 1px solid #ccc;
+  border-radius: 2%;
+  z-index: 999;
+}

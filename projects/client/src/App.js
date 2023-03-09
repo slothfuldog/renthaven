@@ -1,12 +1,14 @@
 import axios from "axios";
-import {Routes, Route} from "react-router-dom"; 
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import Landing from "./pages/Landing";
 import SignupPanelPage from "./pages/SignupPanel";
 import SigninPanelPage from "./components/SigninPanel";
 
 function App() {
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
 
   useEffect(() => {
     // (async () => {
@@ -16,13 +18,14 @@ function App() {
     //   setMessage(data?.message || "");
     // })();
   }, []);
+
   return (
     <div className="App">
       <Routes>
-        <Route path='/'  />
-        <Route path='/signup' element={<SignupPanelPage />} />
-        <Route path='/signin' element={<SigninPanelPage />} />
-        <Route path='/*'/>
+        <Route path="/" element={<Landing />} />
+        <Route path="/signup" element={<SignupPanelPage />} />
+        <Route path="/signin" element={<SigninPanelPage />} />
+        <Route path="/*" />
       </Routes>
     </div>
   );

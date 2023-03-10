@@ -30,7 +30,7 @@ module.exports = {
                 const encryptedPassword = (req.body.provider != "common") ? encryptPassword(randomString) : encryptPassword(req.body.password);
                 let data1 = await userModel.create({
                     name: req.body.name,
-                    email: req.body.email,
+                    email: req.body.email.toLowerCase(),
                     phone: req.body.phone,
                     password: encryptedPassword,
                     provider: req.body.provider
@@ -88,7 +88,7 @@ module.exports = {
                         result: data[0],
                         token
                     })
-                } else if (req.body.login != "firebase") {
+                } else if (req.body.login == "common") {
                     const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
                     if (checkPass) {
                         res.status(200).send({

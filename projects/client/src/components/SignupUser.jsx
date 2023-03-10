@@ -19,11 +19,14 @@ import { auth, provider, providerFacebook } from "../config/firebase";
 import { signInWithPopup, getAuth, deleteUser } from "firebase/auth";
 import Axios from "axios";
 import { useFormik } from "formik";
-import { basicSchema } from "../schemas/signupValidator";
+import * as yup from "yup"
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
+import { loginAction } from "../actions/userAction";
 
 const SignupUserPage = (props) => {
   const location = useLocation();
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [alerts, setAlert] = useState("");
   const [normalReg, setReg] = useState("common");
@@ -61,15 +64,13 @@ const SignupUserPage = (props) => {
                   setAlert(
                     "You are almost there, please complete the form to finish the registration!"
                   );
-                  
+
                   setGoogleLoading(false);
-                  
                 })
                 .catch((e) => {
                   setInfoIcon(false);
                   onToggle();
                   setAlert("Something went wrong!");
-                  
                 });
             }
           })
@@ -118,6 +119,7 @@ const SignupUserPage = (props) => {
                   setAlert(
                     "You are almost there, please complete the form to finish the registration!"
                   );
+                  console.log(normalReg)
                   setInfoIcon(true);
                   setFacebookLoading(false);
                 })
@@ -148,30 +150,10 @@ const SignupUserPage = (props) => {
         }
       });
   };
-  
   const registerHandler = () => {
     setSignupLoading(true);
-    if (normalReg != "common") {
-      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        provider: normalReg,
-      })
-        .then((res) => {
-          Swal.fire({
-            title: "Registration Success!",
-            icon: "success",
-            confirmButtonText: "Confirm",
-            confirmButtonColor: "#48BB78",
-          }).then((res) => {
-            navigate("/signin", { replace: true });
-          });
-          setSignupLoading(false);
-        })
-        .catch((e) => setSignupLoading(false));
-    } else {
-      
+    console.log(normalReg)
+    if(normalReg == "common"){
       Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
         name: values.name,
         email: values.email,
@@ -187,7 +169,18 @@ const SignupUserPage = (props) => {
               confirmButtonText: "Confirm",
               confirmButtonColor: "#48BB78",
             }).then((res) => {
-              navigate("/signin", { replace: true });
+              Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+                login: normalReg,
+                email: values.email,
+                password: values.password
+              }).then((res) => {
+                if (res.data.success == true) {
+                  navigate("/verify", { replace: true });
+                  localStorage.setItem("renthaven1", res.data.token);
+                  loginAction(res.data.result);
+                  window.location.reload();
+                }
+              });
             });
           else if (res.data.success === false) {
             setAlert("The email had already been registered");
@@ -202,10 +195,51 @@ const SignupUserPage = (props) => {
             onToggle();
             setSignupLoading(false);
           }
+          console.log(e)
           setSignupLoading(false);
         });
+    }else{
+      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        provider: normalReg,
+      })
+        .then((res) => {
+          Swal.fire({
+            title: "Registration Success!",
+            icon: "success",
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#48BB78",
+          }).then((res) => {
+            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+              login: normalReg,
+              email: values.email.toLowerCase(),
+            }).then((res) => {
+              if (res.data.success == true) {
+                navigate("/", { replace: true });
+          localStorage.setItem("renthaven1", res.data.token);
+          loginAction(res.data.result);
+          window.location.reload();
+          setSignupLoading(false);
+              }
+            })
+          });
+          setSignupLoading(false);
+        })
+        .catch((e) => setSignupLoading(false));
     }
   };
+  const passwordRules = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  //password must contains 8 chars, one uppercase, one lowercase, one number and one special characters
+  
+  const basicSchema = yup.object().shape({
+      name: yup.string().required("Please input your name"),
+      email: yup.string().email("Please enter the correct email").required("Required"),
+      phone: yup.string().matches(/^[\d +]+$/, {message: "Please input the valid phone number"}).required("Please input your phone number"),
+      password: normalReg == "common" ? yup.string().min(8).matches(passwordRules,{message: "Password must contains 8 chars, one uppercase, one lowercase, one number and one special characters"}).required("Required") : yup.string(),
+      confirmPassword: yup.string().oneOf([yup.ref("password"), null], "Password must match!")
+  })
   //Formik configuration
   const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
     useFormik({
@@ -217,9 +251,9 @@ const SignupUserPage = (props) => {
         phone: "",
       },
       validationSchema: basicSchema,
-      onSubmit: registerHandler,
+      onSubmit: registerHandler
     });
-
+    console.log(errors)
   useEffect(() => {
     document.title = "Signup RentHaven";
   }, [alerts]);
@@ -241,14 +275,12 @@ const SignupUserPage = (props) => {
             }}
           >
             {alerts == "" ? (
-              <ScaleFade in={isOpen} />
+              ""
             ) : (
-              <ScaleFade in={isOpen}>
                 <Alert status={infoIcon ? "info" : "error"} style={{ marginBottom: "20px" }}>
                   <AlertIcon />
                   {alerts}
                 </Alert>
-              </ScaleFade>
             )}
             <form onSubmit={handleSubmit}>
               <p>
@@ -304,59 +336,62 @@ const SignupUserPage = (props) => {
               ) : (
                 ""
               )}
-              {normalReg == "common" ? <div>
-                <p style={{ marginTop: "10px" }}>
-                  Password <span style={{ color: "red" }}>*</span>
-                </p>
-                <FormControl isRequired>
-                  <InputGroup size="md" style={{ marginTop: "5px" }}>
-                    <Input
-                      isInvalid={errors.password && touched.password ? true : false}
-                      id="password"
-                      type={show ? "text" : "password"}
-                      value={values.password}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <InputRightElement width="3.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleClick}>
-                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                {errors.password && touched.password ? (
-                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
-                ) : (
-                  ""
-                )}
-                <p style={{ marginTop: "10px" }}>
-                  Confirm password <span style={{ color: "red" }}>*</span>
-                </p>
-                <FormControl isRequired>
-                  <InputGroup size="md" style={{ marginTop: "5px" }}>
-                    <Input
-                      isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
-                      id="confirmPassword"
-                      type={show ? "text" : "password"}
-                      value={values.confirmPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <InputRightElement width="3.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleClick}>
-                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                {errors.confirmPassword && touched.confirmPassword ? (
-                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
-                ) : (
-                  ""
-                )}
-              </div>: ""}
-              
+              {normalReg == "common" ? (
+                <div>
+                  <p style={{ marginTop: "10px" }}>
+                    Password <span style={{ color: "red" }}>*</span>
+                  </p>
+                  <FormControl isRequired>
+                    <InputGroup size="md" style={{ marginTop: "5px" }}>
+                      <Input
+                        isInvalid={errors.password && touched.password ? true : false}
+                        id="password"
+                        type={show ? "text" : "password"}
+                        value={values.password}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <InputRightElement width="3.5rem">
+                        <Button h="1.75rem" size="sm" onClick={handleClick}>
+                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                  </FormControl>
+                  {errors.password && touched.password ? (
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
+                  ) : (
+                    ""
+                  )}
+                  <p style={{ marginTop: "10px" }}>
+                    Confirm password <span style={{ color: "red" }}>*</span>
+                  </p>
+                  <FormControl isRequired>
+                    <InputGroup size="md" style={{ marginTop: "5px" }}>
+                      <Input
+                        isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
+                        id="confirmPassword"
+                        type={show ? "text" : "password"}
+                        value={values.confirmPassword}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <InputRightElement width="3.5rem">
+                        <Button h="1.75rem" size="sm" onClick={handleClick}>
+                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                  </FormControl>
+                  {errors.confirmPassword && touched.confirmPassword ? (
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              ) : (
+                ""
+              )}
               <Button
                 isLoading={signupLoading}
                 variant="solid"
@@ -367,12 +402,12 @@ const SignupUserPage = (props) => {
                   marginBottom: "10px",
                 }}
                 type="submit"
-                onClick={registerHandler}
+                onSubmit={handleSubmit}
               >
                 Sign up
               </Button>
             </form>
-            {normalReg === "common" ? (
+            {normalReg == "common" ? (
               <div>
                 <p
                   style={{

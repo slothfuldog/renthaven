@@ -11,6 +11,8 @@ import { loginAction } from "./actions/userAction";
 import { Spinner } from "@chakra-ui/react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import VerifyChecker from "./privateRoutes/phoneAndOtpRoute";
+import VerifyPage from "./pages/VerifyPage";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -23,6 +25,7 @@ function App() {
   const dispatch = useDispatch();
   const keepLogin = async () =>{
     try {
+      setLoading(true)
       let getLocalStorage = localStorage.getItem('renthaven1')
       if(getLocalStorage){
         let res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/signin/keep-login`,{}, {
@@ -48,15 +51,16 @@ function App() {
 
   useEffect(() => {
     keepLogin()
-  }, []);
+  }, [email]);
 
   return (
     <div>
-      <Header />
+      <Header loading = {loading}/>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<VerifyChecker loading = {loading}><Landing /></VerifyChecker>} />
         <Route path="/signup" element={<SignupPanelPage />} />
         <Route path="/signin" element={<SigninPanelPage />} />
+        <Route path="/verify" element={<VerifyPage />} />
         <Route path="/*" />
       </Routes>
       <Footer />

@@ -7,7 +7,7 @@ import {
   InputGroup,
   InputRightElement,
   useDisclosure,
-  ScaleFade
+  ScaleFade,
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
@@ -22,6 +22,7 @@ import { loginSchema } from "../schemas/signinValidator";
 import Axios from "axios";
 import { loginAction } from "../actions/userAction";
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
 
 const SigninUserPage = (props) => {
   const navigate = useNavigate();
@@ -32,17 +33,17 @@ const SigninUserPage = (props) => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [facebookLoading, setFacebookLoading] = useState(false);
   const { isOpen, onToggle } = useDisclosure();
+  const dispatch = useDispatch();
   const handleLoginGoogle = () => {
     setGoogleLoading(true);
     signInWithPopup(auth, provider)
       .then((data) => {
         Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-          login: "firebase",
+          login: data._tokenResponse.providerId,
           email: data._tokenResponse.email,
         }).then((res) => {
           if (res.data.success == true) {
             navigate("/", { replace: true });
-            console.log(res.data.token);
             localStorage.setItem("renthaven1", res.data.token);
             loginAction(res.data.result);
             window.location.reload();
@@ -59,7 +60,7 @@ const SigninUserPage = (props) => {
                   </Link>
                 </p>
               );
-              onToggle()
+              onToggle();
               setGoogleLoading(false);
             });
           }
@@ -74,9 +75,8 @@ const SigninUserPage = (props) => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
       .then((data) => {
-        console.log(data)
         Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-          login: "firebase",
+          login: data._tokenResponse.providerId,
           email: data._tokenResponse.email,
         }).then((res) => {
           if (res.data.success == true) {
@@ -97,7 +97,7 @@ const SigninUserPage = (props) => {
                   </Link>
                 </p>
               );
-              onToggle()
+              onToggle();
               setFacebookLoading(false);
             });
           }
@@ -120,7 +120,7 @@ const SigninUserPage = (props) => {
           loginAction(res.data.result);
           window.location.reload();
           setLoginLoading(false);
-        }else if(res.data.success == false){
+        } else if (res.data.success == false) {
           setAlert(
             <p>
               The account has not been registered, please register{" "}
@@ -129,12 +129,13 @@ const SigninUserPage = (props) => {
               </Link>
             </p>
           );
-          onToggle()
-          setLoginLoading(false)
+          onToggle();
+          setLoginLoading(false);
         }
         setLoginLoading(false);
       })
-      .catch((e) => setLoginLoading(false));
+      .catch((e) => {console.log(e)
+        setLoginLoading(false)});
   };
   const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
     initialValues: {
@@ -168,10 +169,10 @@ const SigninUserPage = (props) => {
               <ScaleFade in={isOpen} />
             ) : (
               <ScaleFade in={isOpen}>
-              <Alert status="error" style={{ marginBottom: "20px" }}>
-                <AlertIcon />
-                {alerts}
-              </Alert>
+                <Alert status="error" style={{ marginBottom: "20px" }}>
+                  <AlertIcon />
+                  {alerts}
+                </Alert>
               </ScaleFade>
             )}
             <form onSubmit={handleSubmit}>
@@ -276,11 +277,7 @@ const SigninUserPage = (props) => {
             >
               <p style={{ marginTop: "10px" }}>
                 Don't have an account yet?{" "}
-                <Link
-                  className="link"
-                  style={{ fontWeight: "600" }}
-                  to="/signup"
-                >
+                <Link className="link" style={{ fontWeight: "600" }} to="/signup">
                   Sign up
                 </Link>
               </p>

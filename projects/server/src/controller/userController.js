@@ -9,7 +9,6 @@ const bcrypt = require("bcrypt")
 
 module.exports = {
     registerAcc: async (req, res) => {
-        console.log(req.body.regis)
         try {
             let data = await userModel.findAll({
                 where: {
@@ -17,7 +16,7 @@ module.exports = {
                 }
             });
             if (data.length > 0) {
-                res.status(200).send({
+                res.status(403).send({
                     success: false,
                     message: "The email has been registered"
                 })
@@ -28,12 +27,13 @@ module.exports = {
                 for (let i = 0, n = charset.length; i < length; ++i) {
                     randomString += charset.charAt(Math.floor(Math.random() * n));
                 }
-                const encryptedPassword = (req.body.regis == "firebase") ? encryptPassword(randomString) : encryptPassword(req.body.password);
+                const encryptedPassword = (req.body.provider != "common") ? encryptPassword(randomString) : encryptPassword(req.body.password);
                 let data1 = await userModel.create({
                     name: req.body.name,
                     email: req.body.email,
                     phone: req.body.phone,
                     password: encryptedPassword,
+                    provider: req.body.provider
                 });
                 res.status(200).send({
                     success: true,
@@ -56,7 +56,7 @@ module.exports = {
                 }
             });
             if (data.length > 0) {
-                res.status(200).send({
+                res.status(403).send({
                     success: false,
                     message: "The email has been registered"
                 })
@@ -81,7 +81,7 @@ module.exports = {
                 ...data
             });
             if (data.length > 0) {
-                if (req.body.login == "firebase") {
+                if (req.body.login != "common") {
                     res.status(200).send({
                         success: true,
                         message: "Login successfull",

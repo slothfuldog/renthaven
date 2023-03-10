@@ -7,11 +7,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
+  ScaleFade,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
@@ -20,7 +16,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { auth, provider, providerFacebook } from "../config/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, getAuth, deleteUser } from "firebase/auth";
 import Axios from "axios";
 import { useFormik } from "formik";
 import { basicSchema } from "../schemas/signupValidator";
@@ -29,17 +25,14 @@ import Swal from "sweetalert2";
 const SignupUserPage = (props) => {
   const location = useLocation();
   const [show, setShow] = useState(false);
-  const [alerts, setAlert] = useState(
-    location.state == null || location.state == undefined
-      ? ""
-      : location.state.alert
-  );
+  const [alerts, setAlert] = useState("");
   const [normalReg, setReg] = useState("common");
   const [googleLoading, setGoogleLoading] = useState(false);
   const [facebookLoading, setFacebookLoading] = useState(false);
   const [signupLoading, setSignupLoading] = useState(false);
   const [infoIcon, setInfoIcon] = useState(false);
   const handleClick = () => setShow(!show);
+  const { isOpen, onToggle } = useDisclosure();
   const navigate = useNavigate();
   //signup handle section
   const handleSignupGoogle = () => {
@@ -48,33 +41,57 @@ const SignupUserPage = (props) => {
       .then((data) => {
         Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/user", {
           email: data._tokenResponse.email,
-        }).then((res) => {
-          console.log(res.status);
-          if (res.data.success == false) {
-            setAlert("The email had already been registered");
-            setInfoIcon(false);
+        })
+          .then((res) => {
+            if (res.data.success == false) {
+              onToggle();
+              setAlert("The email had already been registered");
+              setInfoIcon(false);
+              setGoogleLoading(false);
+            } else {
+              const authenticate = getAuth();
+              const user = authenticate.currentUser;
+              setFieldValue("name", data._tokenResponse.displayName);
+              setFieldValue("email", data._tokenResponse.email);
+              setReg(data._tokenResponse.providerId);
+              deleteUser(user)
+                .then(() => {
+                  setInfoIcon(true);
+                  onToggle();
+                  setAlert(
+                    "You are almost there, please complete the form to finish the registration!"
+                  );
+                  
+                  setGoogleLoading(false);
+                  
+                })
+                .catch((e) => {
+                  setInfoIcon(false);
+                  onToggle();
+                  setAlert("Something went wrong!");
+                  
+                });
+            }
+          })
+          .catch((e) => {
+            if (e.response.status == 403) {
+              onToggle();
+              setAlert("The email had already been registered");
+              setGoogleLoading(false);
+            }
             setGoogleLoading(false);
-          } else {
-            setFieldValue("name", data._tokenResponse.displayName);
-            setFieldValue("email", data._tokenResponse.email);
-            setReg("firebase");
-            setAlert(
-              "You are almost there, please complete the form to finish the registration!"
-            );
-            setInfoIcon(true);
-            setGoogleLoading(false);
-          }
-        });
+          });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setGoogleLoading(false);
-        } else {
-          console.log(e);
-          setAlert("The email had already been registered");
+        } else if (e.response.status == 409) {
+          onToggle();
           setInfoIcon(false);
+          setAlert("The email had already been registered");
           setGoogleLoading(false);
         }
+        setGoogleLoading(false);
       });
   };
   const handleSignupFacebook = () => {
@@ -83,43 +100,63 @@ const SignupUserPage = (props) => {
       .then((data) => {
         Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/user", {
           email: data._tokenResponse.email,
-        }).then((res) => {
-          if (res.data.success == false) {
-            setAlert("The email had already been registered");
-            setInfoIcon(false);
-            setFacebookLoading(false);
-          } else {
-            setFieldValue("name", data._tokenResponse.displayName);
-            setFieldValue("email", data._tokenResponse.email);
-            setReg("firebase");
-            setAlert(
-              "You are almost there, please complete the form to finish the registration!"
-            );
-            setInfoIcon(true);
-            setFacebookLoading(false);
-          }
-        });
+        })
+          .then((res) => {
+            if (res.data.success == false) {
+              onToggle();
+              setAlert("The email had already been registered");
+              setInfoIcon(false);
+              setFacebookLoading(false);
+            } else {
+              const authenticate = getAuth();
+              const user = authenticate.currentUser;
+              setFieldValue("name", data._tokenResponse.displayName);
+              setFieldValue("email", data._tokenResponse.email);
+              setReg(data._tokenResponse.providerId);
+              deleteUser(user)
+                .then(() => {
+                  setAlert(
+                    "You are almost there, please complete the form to finish the registration!"
+                  );
+                  setInfoIcon(true);
+                  setFacebookLoading(false);
+                })
+                .catch((e) => {
+                  setInfoIcon(false);
+                  setAlert("Something went wrong!");
+                  onToggle();
+                });
+            }
+          })
+          .catch((e) => {
+            if (e.response.status == 403) {
+              onToggle();
+              setAlert("The email had already been registered");
+              setGoogleLoading(false);
+            }
+            setGoogleLoading(false);
+          });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
-          console.log("hello");
           setFacebookLoading(false);
         } else {
-          console.log(e);
+          onToggle();
           setAlert("The email had already been registered");
           setInfoIcon(false);
           setFacebookLoading(false);
         }
       });
   };
+  
   const registerHandler = () => {
     setSignupLoading(true);
-    if (normalReg == "firebase") {
+    if (normalReg != "common") {
       Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
         name: values.name,
         email: values.email,
         phone: values.phone,
-        regis: normalReg,
+        provider: normalReg,
       })
         .then((res) => {
           Swal.fire({
@@ -134,51 +171,58 @@ const SignupUserPage = (props) => {
         })
         .catch((e) => setSignupLoading(false));
     } else {
+      
       Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
         name: values.name,
         email: values.email,
         password: values.password,
         phone: values.phone,
-        regis: normalReg,
+        provider: normalReg,
       })
         .then((res) => {
-          Swal.fire({
-            title: "Registration Success!",
-            icon: "success",
-            confirmButtonText: "Confirm",
-            confirmButtonColor: "#48BB78",
-          }).then((res) => {
-            navigate("/signin", { replace: true });
-          });
+          if (res.data.success === true)
+            Swal.fire({
+              title: "Registration Success!",
+              icon: "success",
+              confirmButtonText: "Confirm",
+              confirmButtonColor: "#48BB78",
+            }).then((res) => {
+              navigate("/signin", { replace: true });
+            });
+          else if (res.data.success === false) {
+            setAlert("The email had already been registered");
+            onToggle();
+            setSignupLoading(false);
+          }
           setSignupLoading(false);
         })
-        .catch((e) => setSignupLoading(false));
+        .catch((e) => {
+          if (e.response.status == 403) {
+            setAlert("The email had already been registered");
+            onToggle();
+            setSignupLoading(false);
+          }
+          setSignupLoading(false);
+        });
     }
   };
   //Formik configuration
-  const {
-    values,
-    errors,
-    touched,
-    handleBlur,
-    handleChange,
-    setFieldValue,
-    handleSubmit,
-  } = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      phone: "",
-    },
-    validationSchema: basicSchema,
-    onSubmit: registerHandler,
-  });
+  const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
+    useFormik({
+      initialValues: {
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+      },
+      validationSchema: basicSchema,
+      onSubmit: registerHandler,
+    });
 
   useEffect(() => {
     document.title = "Signup RentHaven";
-  }, []);
+  }, [alerts]);
   return (
     <div>
       <Box>
@@ -196,26 +240,15 @@ const SignupUserPage = (props) => {
               paddingTop: "25px",
             }}
           >
-            {/* <p
-              className="fw-bold"
-              style={{
-                fontSize: "28px",
-                textAlign: "center",
-                marginBottom: "30px",
-              }}
-            >
-              Sign Up
-            </p> */}
             {alerts == "" ? (
-              ""
+              <ScaleFade in={isOpen} />
             ) : (
-              <Alert
-                status={infoIcon == false ? "error" : "info"}
-                style={{ marginBottom: "5px" }}
-              >
-                <AlertIcon />
-                {alerts}
-              </Alert>
+              <ScaleFade in={isOpen}>
+                <Alert status={infoIcon ? "info" : "error"} style={{ marginBottom: "20px" }}>
+                  <AlertIcon />
+                  {alerts}
+                </Alert>
+              </ScaleFade>
             )}
             <form onSubmit={handleSubmit}>
               <p>
@@ -232,9 +265,7 @@ const SignupUserPage = (props) => {
                 />
               </FormControl>
               {errors.name && touched.name ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.name}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.name}</p>
               ) : (
                 ""
               )}
@@ -252,9 +283,7 @@ const SignupUserPage = (props) => {
                 />
               </FormControl>
               {errors.email && touched.email ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.email}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.email}</p>
               ) : (
                 ""
               )}
@@ -271,79 +300,63 @@ const SignupUserPage = (props) => {
                 />
               </FormControl>
               {errors.phone && touched.phone ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.phone}
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.phone}</p>
+              ) : (
+                ""
+              )}
+              {normalReg == "common" ? <div>
+                <p style={{ marginTop: "10px" }}>
+                  Password <span style={{ color: "red" }}>*</span>
                 </p>
-              ) : (
-                ""
-              )}
-              {normalReg === "common" ? (
-                <div>
-                  <p style={{ marginTop: "10px" }}>
-                    Password <span style={{ color: "red" }}>*</span>
-                  </p>
-                  <FormControl isRequired>
-                    <InputGroup size="md" style={{ marginTop: "5px" }}>
-                      <Input
-                        isInvalid={
-                          errors.password && touched.password ? true : false
-                        }
-                        id="password"
-                        type={show ? "text" : "password"}
-                        value={values.password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                      <InputRightElement width="3.5rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClick}>
-                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                  </FormControl>
-                  {errors.password && touched.password ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>
-                      {errors.password}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  <p style={{ marginTop: "10px" }}>
-                    Confirm password <span style={{ color: "red" }}>*</span>
-                  </p>
-                  <FormControl isRequired>
-                    <InputGroup size="md" style={{ marginTop: "5px" }}>
-                      <Input
-                        isInvalid={
-                          errors.confirmPassword && touched.confirmPassword
-                            ? true
-                            : false
-                        }
-                        id="confirmPassword"
-                        type={show ? "text" : "password"}
-                        value={values.confirmPassword}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                      <InputRightElement width="3.5rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClick}>
-                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                  </FormControl>
-                  {errors.confirmPassword && touched.confirmPassword ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>
-                      {errors.confirmPassword}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ) : (
-                ""
-              )}
-
+                <FormControl isRequired>
+                  <InputGroup size="md" style={{ marginTop: "5px" }}>
+                    <Input
+                      isInvalid={errors.password && touched.password ? true : false}
+                      id="password"
+                      type={show ? "text" : "password"}
+                      value={values.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <InputRightElement width="3.5rem">
+                      <Button h="1.75rem" size="sm" onClick={handleClick}>
+                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+                {errors.password && touched.password ? (
+                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
+                ) : (
+                  ""
+                )}
+                <p style={{ marginTop: "10px" }}>
+                  Confirm password <span style={{ color: "red" }}>*</span>
+                </p>
+                <FormControl isRequired>
+                  <InputGroup size="md" style={{ marginTop: "5px" }}>
+                    <Input
+                      isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
+                      id="confirmPassword"
+                      type={show ? "text" : "password"}
+                      value={values.confirmPassword}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <InputRightElement width="3.5rem">
+                      <Button h="1.75rem" size="sm" onClick={handleClick}>
+                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+                {errors.confirmPassword && touched.confirmPassword ? (
+                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
+                ) : (
+                  ""
+                )}
+              </div>: ""}
+              
               <Button
                 isLoading={signupLoading}
                 variant="solid"
@@ -370,9 +383,7 @@ const SignupUserPage = (props) => {
                     margin: "10px 0 20px",
                   }}
                 >
-                  <span style={{ background: "#fff", padding: "0 10px" }}>
-                    OR
-                  </span>
+                  <span style={{ background: "#fff", padding: "0 10px" }}>OR</span>
                 </p>
                 <Button
                   isLoading={googleLoading}

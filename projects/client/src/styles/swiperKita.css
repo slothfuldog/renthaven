@@ -1,0 +1,30 @@
+/* .landing-bannner .swiper-button-prev {
+  color: #0069a3;
+}
+
+.landing-bannner .swiper-button-next {
+  color: #0069a3;
+}
+
+.landing-bannner .swiper-slide {
+  margin: auto;
+} */
+.slick-slide div{
+  margin: 0 10px;
+  overflow: hidden;
+}
+.slick-list {
+  margin: 0 -10px;
+}
+
+.main-content .swiper-slide {
+  margin: 12px 12px;
+}
+
+.main-content .swiper-button-next {
+  color: #0069a3;
+}
+
+.main-content .swiper-button-prev {
+  color: #0069a3;
+}

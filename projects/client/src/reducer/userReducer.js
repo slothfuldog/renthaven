@@ -9,7 +9,7 @@ const INITIAL_STATE = {
     isDelete: 0,
     isVerified: 0,
     isActive: 0,
-    login: "common"
+    provider: "common"
 }
 
 export const userReducer = (state = INITIAL_STATE, action ) =>{

@@ -1,10 +1,13 @@
 import {
+  Alert,
+  AlertIcon,
   Box,
   Button,
   Input,
   InputGroup,
   InputRightElement,
   useDisclosure,
+  ScaleFade
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
@@ -14,19 +17,21 @@ import { useFormik } from "formik";
 import "../styles/login.css";
 import { useEffect, useState } from "react";
 import { auth, provider, providerFacebook } from "../config/firebase";
-import { signInWithPopup} from "firebase/auth";
+import { signInWithPopup, getAuth, deleteUser } from "firebase/auth";
 import { loginSchema } from "../schemas/signinValidator";
 import Axios from "axios";
 import { loginAction } from "../actions/userAction";
+import Swal from "sweetalert2";
 
 const SigninUserPage = (props) => {
   const navigate = useNavigate();
+  const [alerts, setAlert] = useState("");
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const [loginLoading, setLoginLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [facebookLoading, setFacebookLoading] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onToggle } = useDisclosure();
   const handleLoginGoogle = () => {
     setGoogleLoading(true);
     signInWithPopup(auth, provider)
@@ -37,25 +42,39 @@ const SigninUserPage = (props) => {
         }).then((res) => {
           if (res.data.success == true) {
             navigate("/", { replace: true });
-            console.log(res.data.token)
+            console.log(res.data.token);
             localStorage.setItem("renthaven1", res.data.token);
-            loginAction(res.data.result)
+            loginAction(res.data.result);
             window.location.reload();
             setGoogleLoading(false);
-          }
-          else if(res.data.success == false){
-            navigate("/signup", {replace: true, state: {alert: "You should register first"}});
-            setGoogleLoading(false);
+          } else if (res.data.success == false) {
+            const authenticate = getAuth();
+            const user = authenticate.currentUser;
+            deleteUser(user).then(() => {
+              setAlert(
+                <p>
+                  The account has not been registered, please register{" "}
+                  <Link className="link" to="/signup">
+                    here
+                  </Link>
+                </p>
+              );
+              onToggle()
+              setGoogleLoading(false);
+            });
           }
           setGoogleLoading(false);
         });
       })
-      .catch((e) => setGoogleLoading(false));
+      .catch((e) => {
+        setGoogleLoading(false);
+      });
   };
   const handleLoginFacebook = () => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
       .then((data) => {
+        console.log(data)
         Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
           login: "firebase",
           email: data._tokenResponse.email,
@@ -63,13 +82,24 @@ const SigninUserPage = (props) => {
           if (res.data.success == true) {
             navigate("/", { replace: true });
             localStorage.setItem("renthaven1", res.data.token);
-            loginAction(res.data.result)
+            loginAction(res.data.result);
             window.location.reload();
             setFacebookLoading(false);
-          }
-          else if(res.data.success == false){
-            navigate("/signup", {replace: true, state: {alert: "You should register first"}});
-            setFacebookLoading(false);
+          } else if (res.data.success == false) {
+            const authenticate = getAuth();
+            const user = authenticate.currentUser;
+            deleteUser(user).then(() => {
+              setAlert(
+                <p>
+                  The account has not been registered, please register{" "}
+                  <Link className="link" to="/signup">
+                    here
+                  </Link>
+                </p>
+              );
+              onToggle()
+              setFacebookLoading(false);
+            });
           }
           setFacebookLoading(false);
         });
@@ -87,26 +117,36 @@ const SigninUserPage = (props) => {
         if (res.data.success == true) {
           navigate("/", { replace: true });
           localStorage.setItem("renthaven1", res.data.token);
-          loginAction(res.data.result)
+          loginAction(res.data.result);
           window.location.reload();
           setLoginLoading(false);
+        }else if(res.data.success == false){
+          setAlert(
+            <p>
+              The account has not been registered, please register{" "}
+              <Link className="link" to="/signup">
+                here
+              </Link>
+            </p>
+          );
+          onToggle()
+          setLoginLoading(false)
         }
         setLoginLoading(false);
       })
       .catch((e) => setLoginLoading(false));
   };
-  const { errors, values, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        email: "",
-        password: "",
-      },
-      validationSchema: loginSchema,
-      onSubmit: handleEmailLogin,
-    });
-    useEffect(() => {
-      document.title = "RentHaven || Signin";
-    }, []);
+  const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit: handleEmailLogin,
+  });
+  useEffect(() => {
+    document.title = "RentHaven || Signin";
+  }, [alerts]);
   return (
     <div>
       <Box>
@@ -119,11 +159,21 @@ const SigninUserPage = (props) => {
         >
           <div
             style={{
-                textAlign: "left",
-                margin: "0px 30px 0",
-                paddingTop: "25px",
+              textAlign: "left",
+              margin: "0px 30px 0",
+              paddingTop: "25px",
             }}
           >
+            {alerts == "" ? (
+              <ScaleFade in={isOpen} />
+            ) : (
+              <ScaleFade in={isOpen}>
+              <Alert status="error" style={{ marginBottom: "20px" }}>
+                <AlertIcon />
+                {alerts}
+              </Alert>
+              </ScaleFade>
+            )}
             <form onSubmit={handleSubmit}>
               <p>
                 Email / Phone <span style={{ color: "red" }}>*</span>
@@ -137,9 +187,7 @@ const SigninUserPage = (props) => {
                 onBlur={handleBlur}
               />
               {errors.email && touched.email ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.email}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.email}</p>
               ) : (
                 ""
               )}
@@ -148,7 +196,6 @@ const SigninUserPage = (props) => {
               </p>
               <InputGroup size="md" style={{ marginTop: "5px" }}>
                 <Input
-
                   isInvalid={errors.password && touched.password ? true : false}
                   id="password"
                   value={values.password}
@@ -163,9 +210,7 @@ const SigninUserPage = (props) => {
                 </InputRightElement>
               </InputGroup>
               {errors.password && touched.password ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.password}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
               ) : (
                 ""
               )}
@@ -235,15 +280,8 @@ const SigninUserPage = (props) => {
                   className="link"
                   style={{ fontWeight: "600" }}
                   to="/signup"
-                  onClick={() => onclose()}
                 >
                   Sign up
-                </Link>
-              </p>
-              <p style={{ marginTop: "10px" }}>
-                Already registered but have not got the OTP yet?{" "}
-                <Link className="link" style={{ fontWeight: "600" }}>
-                  send OTP
                 </Link>
               </p>
             </div>

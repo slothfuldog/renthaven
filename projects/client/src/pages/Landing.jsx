@@ -11,7 +11,6 @@ import LandingBanner from "../components/LandingBanner";
 function Landing() {
   return (
     <Box>
-      <Header />
       {/* banner */}
       <Flex py={{ base: 0, lg: 3 }} direction="row" justify="center" bg="green.700">
         <LandingBanner />
@@ -22,7 +21,6 @@ function Landing() {
       </Box>
       <Divider />
       <LandingContent />
-      <Footer />
     </Box>
   );
 }

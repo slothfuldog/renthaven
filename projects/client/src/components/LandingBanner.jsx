@@ -1,7 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper";
-import { Container, Image } from "@chakra-ui/react";
+import { Container, Flex, Image } from "@chakra-ui/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "../styles/swiperKita.css";

@@ -9,7 +9,6 @@ const bcrypt = require("bcrypt")
 
 module.exports = {
     registerAcc: async (req, res) => {
-        console.log(req.body.regis)
         try {
             let data = await userModel.findAll({
                 where: {
@@ -17,7 +16,7 @@ module.exports = {
                 }
             });
             if (data.length > 0) {
-                res.status(200).send({
+                res.status(403).send({
                     success: false,
                     message: "The email has been registered"
                 })
@@ -28,12 +27,13 @@ module.exports = {
                 for (let i = 0, n = charset.length; i < length; ++i) {
                     randomString += charset.charAt(Math.floor(Math.random() * n));
                 }
-                const encryptedPassword = (req.body.regis == "firebase") ? encryptPassword(randomString) : encryptPassword(req.body.password);
+                const encryptedPassword = (req.body.provider != "common") ? encryptPassword(randomString) : encryptPassword(req.body.password);
                 let data1 = await userModel.create({
                     name: req.body.name,
-                    email: req.body.email,
+                    email: req.body.email.toLowerCase(),
                     phone: req.body.phone,
                     password: encryptedPassword,
+                    provider: req.body.provider
                 });
                 res.status(200).send({
                     success: true,
@@ -44,7 +44,7 @@ module.exports = {
             console.log(error);
             res.status(501).send({
                 success: false,
-                message: req.body.name
+                message: "Database error"
             })
         }
     },
@@ -56,7 +56,7 @@ module.exports = {
                 }
             });
             if (data.length > 0) {
-                res.status(200).send({
+                res.status(403).send({
                     success: false,
                     message: "The email has been registered"
                 })
@@ -78,18 +78,17 @@ module.exports = {
                 }
             })
             let token = createToken({
-                ...data,
-                login: req.body.login
+                ...data
             });
             if (data.length > 0) {
-                if (req.body.login == "firebase") {
+                if (req.body.login != "common") {
                     res.status(200).send({
                         success: true,
                         message: "Login successfull",
                         result: data[0],
                         token
                     })
-                } else if (req.body.login != "firebase") {
+                } else if (req.body.login == "common") {
                     const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
                     if (checkPass) {
                         res.status(200).send({
@@ -99,19 +98,19 @@ module.exports = {
                             token
                         })
                     } else {
-                        res.status(403).send({
+                        res.status(200).send({
                             success: false,
                             message: "Username or password invalid"
                         })
                     }
                 } else {
-                    res.status(403).send({
+                    res.status(200).send({
                         success: false,
                         message: "Username or password invalid"
                     })
                 }
             } else {
-                res.status(403).send({
+                res.status(200).send({
                     success: false,
                     message: "Username or password invalid"
                 })
@@ -124,5 +123,71 @@ module.exports = {
                 error
             })
         }
-    }
+    },
+    keepLogin: async (req, res) => {
+        try {
+            const data = await userModel.findAll({
+                where: {
+                    email: req.decrypt.email
+                }
+            })
+            console.log(data[0].isVerified)
+            let token = createToken({
+                ...data
+            });
+            console.log(req.decrypt)
+            if(data.length > 0){
+                return res.status(200).send({
+                success: true,
+                result: data[0],
+                token
+            }) 
+            }
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({
+                success: false,
+                message: "Database Error"
+            });
+        }
+    },verifyAcc: async (req, res) => {
+        try {
+          // read token user logging in
+          // update user
+          const { otp, phone } = req.body;
+          console.log(req.decrypt);
+          let user = await userModel.findOne({
+            where: { email: req.decrypt.email },
+          });
+          console.log(user);
+    
+          if (user.otp !== otp) {
+            return res.status(400).send({
+              success: false,
+              message: "OTP is not correct.",
+            });
+          }
+          const phoneNum = user.provider == "common" ? user.phone : phone
+          let userUpdate = await userModel.update(
+            { isVerified: 1,
+               phone: phoneNum
+            },
+            {
+              where: { email: req.decrypt.email },
+            }
+          );
+          res.status(200).send({
+            success: true,
+            message: "Your account is verified",
+            userUpdate,
+          });
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({
+            success: false,
+            message: "An error occured while verifying account.",
+            error,
+          });
+        }
+      },
 }

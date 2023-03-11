@@ -1,4 +1,4 @@
-.landing-bannner .swiper-button-prev {
+/* .landing-bannner .swiper-button-prev {
   color: #0069a3;
 }
 
@@ -8,6 +8,13 @@
 
 .landing-bannner .swiper-slide {
   margin: auto;
+} */
+.slick-slide div{
+  margin: 0 10px;
+  overflow: hidden;
+}
+.slick-list {
+  margin: 0 -10px;
 }
 
 .main-content .swiper-slide {

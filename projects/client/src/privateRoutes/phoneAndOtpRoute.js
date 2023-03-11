@@ -9,7 +9,7 @@ const VerifyChecker = (props) => {
     })
     const getLocalStorage = localStorage.getItem("renthaven1")
     if(getLocalStorage){
-        if(isVerified == 0){
+        if(isVerified == false){
             return(<Navigate to = "/verify" />)
         }
             return props.children

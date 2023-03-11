@@ -19,10 +19,11 @@ import { auth, provider, providerFacebook } from "../config/firebase";
 import { signInWithPopup, getAuth, deleteUser } from "firebase/auth";
 import Axios from "axios";
 import { useFormik } from "formik";
-import * as yup from "yup"
+import * as yup from "yup";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../actions/userAction";
+import { basicSchema } from "../schemas/signupValidator";
 
 const SignupUserPage = (props) => {
   const location = useLocation();
@@ -42,44 +43,44 @@ const SignupUserPage = (props) => {
     setGoogleLoading(true);
     signInWithPopup(auth, provider)
       .then((data) => {
-        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/user", {
+        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
+          name: data._tokenResponse.displayName,
           email: data._tokenResponse.email,
+          phone: "-",
+          provider: data._tokenResponse.providerId,
         })
           .then((res) => {
-            if (res.data.success == false) {
-              onToggle();
-              setAlert("The email had already been registered");
-              setInfoIcon(false);
-              setGoogleLoading(false);
-            } else {
-              const authenticate = getAuth();
-              const user = authenticate.currentUser;
-              setFieldValue("name", data._tokenResponse.displayName);
-              setFieldValue("email", data._tokenResponse.email);
-              setReg(data._tokenResponse.providerId);
-              deleteUser(user)
-                .then(() => {
-                  setInfoIcon(true);
-                  onToggle();
-                  setAlert(
-                    "You are almost there, please complete the form to finish the registration!"
-                  );
-
-                  setGoogleLoading(false);
+            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+              login: data._tokenResponse.providerId,
+              email: data._tokenResponse.email,
+            }).then((result) => {
+              localStorage.setItem("renthaven1", result.data.token);
+              loginAction(result.data.result)
+              Swal.fire({
+                title: "Registration Success!",
+                icon: "success",
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#48BB78",
+              })
+                .then((res) => {
+                    navigate("/verify", { replace: true });
+                    localStorage.setItem("renthaven1", result.data.token);
+                    window.location.reload();
+                }).catch(e =>{
+                  console.log(e)
                 })
-                .catch((e) => {
-                  setInfoIcon(false);
-                  onToggle();
-                  setAlert("Something went wrong!");
-                });
-            }
+            }).catch((e) =>{
+              onToggle();
+            setInfoIcon(false);
+            setAlert("The email had already been registered");
+            setGoogleLoading(false);
+            })
+            setGoogleLoading(false);
           })
           .catch((e) => {
-            if (e.response.status == 403) {
-              onToggle();
-              setAlert("The email had already been registered");
-              setGoogleLoading(false);
-            }
+            onToggle();
+            setInfoIcon(false);
+            setAlert("The email had already been registered");
             setGoogleLoading(false);
           });
       })
@@ -99,43 +100,44 @@ const SignupUserPage = (props) => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
       .then((data) => {
-        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/user", {
+        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
+          name: data._tokenResponse.displayName,
           email: data._tokenResponse.email,
+          phone: "-",
+          provider: data._tokenResponse.providerId,
         })
           .then((res) => {
-            if (res.data.success == false) {
-              onToggle();
-              setAlert("The email had already been registered");
-              setInfoIcon(false);
-              setFacebookLoading(false);
-            } else {
-              const authenticate = getAuth();
-              const user = authenticate.currentUser;
-              setFieldValue("name", data._tokenResponse.displayName);
-              setFieldValue("email", data._tokenResponse.email);
-              setReg(data._tokenResponse.providerId);
-              deleteUser(user)
-                .then(() => {
-                  setAlert(
-                    "You are almost there, please complete the form to finish the registration!"
-                  );
-                  console.log(normalReg)
-                  setInfoIcon(true);
-                  setFacebookLoading(false);
+            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+              login: data._tokenResponse.providerId,
+              email: data._tokenResponse.email,
+            }).then((result) => {
+              localStorage.setItem("renthaven1", result.data.token);
+              loginAction(result.data.result)
+              Swal.fire({
+                title: "Registration Success!",
+                icon: "success",
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#48BB78",
+              })
+                .then((res) => {
+                    navigate("/verify", { replace: true });
+                    localStorage.setItem("renthaven1", result.data.token);
+                    window.location.reload();
+                }).catch(e =>{
+                  console.log(e)
                 })
-                .catch((e) => {
-                  setInfoIcon(false);
-                  setAlert("Something went wrong!");
-                  onToggle();
-                });
-            }
+            }).catch((e) =>{
+              onToggle();
+            setInfoIcon(false);
+            setAlert("The email had already been registered");
+            setFacebookLoading(false);
+            })
+            setFacebookLoading(false);
           })
           .catch((e) => {
-            if (e.response.status == 403) {
-              onToggle();
-              setAlert("The email had already been registered");
-              setGoogleLoading(false);
-            }
+            onToggle();
+            setInfoIcon(false);
+            setAlert("The email had already been registered");
             setGoogleLoading(false);
           });
       })
@@ -152,14 +154,13 @@ const SignupUserPage = (props) => {
   };
   const registerHandler = () => {
     setSignupLoading(true);
-    console.log(normalReg)
-    if(normalReg == "common"){
+    if (normalReg == "common") {
       Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
         name: values.name,
         email: values.email,
         password: values.password,
         phone: values.phone,
-        provider: normalReg,
+        provider: "common",
       })
         .then((res) => {
           if (res.data.success === true)
@@ -172,7 +173,7 @@ const SignupUserPage = (props) => {
               Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
                 login: normalReg,
                 email: values.email,
-                password: values.password
+                password: values.password,
               }).then((res) => {
                 if (res.data.success == true) {
                   navigate("/verify", { replace: true });
@@ -195,51 +196,14 @@ const SignupUserPage = (props) => {
             onToggle();
             setSignupLoading(false);
           }
-          console.log(e)
+          console.log(e);
           setSignupLoading(false);
         });
-    }else{
-      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        provider: normalReg,
-      })
-        .then((res) => {
-          Swal.fire({
-            title: "Registration Success!",
-            icon: "success",
-            confirmButtonText: "Confirm",
-            confirmButtonColor: "#48BB78",
-          }).then((res) => {
-            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-              login: normalReg,
-              email: values.email.toLowerCase(),
-            }).then((res) => {
-              if (res.data.success == true) {
-                navigate("/", { replace: true });
-          localStorage.setItem("renthaven1", res.data.token);
-          loginAction(res.data.result);
-          window.location.reload();
-          setSignupLoading(false);
-              }
-            })
-          });
-          setSignupLoading(false);
-        })
-        .catch((e) => setSignupLoading(false));
     }
   };
   const passwordRules = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
   //password must contains 8 chars, one uppercase, one lowercase, one number and one special characters
-  
-  const basicSchema = yup.object().shape({
-      name: yup.string().required("Please input your name"),
-      email: yup.string().email("Please enter the correct email").required("Required"),
-      phone: yup.string().matches(/^[\d +]+$/, {message: "Please input the valid phone number"}).required("Please input your phone number"),
-      password: normalReg == "common" ? yup.string().min(8).matches(passwordRules,{message: "Password must contains 8 chars, one uppercase, one lowercase, one number and one special characters"}).required("Required") : yup.string(),
-      confirmPassword: yup.string().oneOf([yup.ref("password"), null], "Password must match!")
-  })
+
   //Formik configuration
   const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
     useFormik({
@@ -251,9 +215,8 @@ const SignupUserPage = (props) => {
         phone: "",
       },
       validationSchema: basicSchema,
-      onSubmit: registerHandler
+      onSubmit: registerHandler,
     });
-    console.log(errors)
   useEffect(() => {
     document.title = "Signup RentHaven";
   }, [alerts]);
@@ -277,10 +240,10 @@ const SignupUserPage = (props) => {
             {alerts == "" ? (
               ""
             ) : (
-                <Alert status={infoIcon ? "info" : "error"} style={{ marginBottom: "20px" }}>
-                  <AlertIcon />
-                  {alerts}
-                </Alert>
+              <Alert status={infoIcon ? "info" : "error"} style={{ marginBottom: "20px" }}>
+                <AlertIcon />
+                {alerts}
+              </Alert>
             )}
             <form onSubmit={handleSubmit}>
               <p>
@@ -336,62 +299,59 @@ const SignupUserPage = (props) => {
               ) : (
                 ""
               )}
-              {normalReg == "common" ? (
-                <div>
-                  <p style={{ marginTop: "10px" }}>
-                    Password <span style={{ color: "red" }}>*</span>
-                  </p>
-                  <FormControl isRequired>
-                    <InputGroup size="md" style={{ marginTop: "5px" }}>
-                      <Input
-                        isInvalid={errors.password && touched.password ? true : false}
-                        id="password"
-                        type={show ? "text" : "password"}
-                        value={values.password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                      <InputRightElement width="3.5rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClick}>
-                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                  </FormControl>
-                  {errors.password && touched.password ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
-                  ) : (
-                    ""
-                  )}
-                  <p style={{ marginTop: "10px" }}>
-                    Confirm password <span style={{ color: "red" }}>*</span>
-                  </p>
-                  <FormControl isRequired>
-                    <InputGroup size="md" style={{ marginTop: "5px" }}>
-                      <Input
-                        isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
-                        id="confirmPassword"
-                        type={show ? "text" : "password"}
-                        value={values.confirmPassword}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                      <InputRightElement width="3.5rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClick}>
-                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                  </FormControl>
-                  {errors.confirmPassword && touched.confirmPassword ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ) : (
-                ""
-              )}
+
+              <div>
+                <p style={{ marginTop: "10px" }}>
+                  Password <span style={{ color: "red" }}>*</span>
+                </p>
+                <FormControl isRequired>
+                  <InputGroup size="md" style={{ marginTop: "5px" }}>
+                    <Input
+                      isInvalid={errors.password && touched.password ? true : false}
+                      id="password"
+                      type={show ? "text" : "password"}
+                      value={values.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <InputRightElement width="3.5rem">
+                      <Button h="1.75rem" size="sm" onClick={handleClick}>
+                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+                {errors.password && touched.password ? (
+                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
+                ) : (
+                  ""
+                )}
+                <p style={{ marginTop: "10px" }}>
+                  Confirm password <span style={{ color: "red" }}>*</span>
+                </p>
+                <FormControl isRequired>
+                  <InputGroup size="md" style={{ marginTop: "5px" }}>
+                    <Input
+                      isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
+                      id="confirmPassword"
+                      type={show ? "text" : "password"}
+                      value={values.confirmPassword}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <InputRightElement width="3.5rem">
+                      <Button h="1.75rem" size="sm" onClick={handleClick}>
+                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+                {errors.confirmPassword && touched.confirmPassword ? (
+                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
+                ) : (
+                  ""
+                )}
+              </div>
               <Button
                 isLoading={signupLoading}
                 variant="solid"
@@ -407,49 +367,44 @@ const SignupUserPage = (props) => {
                 Sign up
               </Button>
             </form>
-            {normalReg == "common" ? (
-              <div>
-                <p
-                  style={{
-                    width: "100%",
-                    textAlign: "center",
-                    borderBottom: "1px solid #000",
-                    lineHeight: "0.1em",
-                    margin: "10px 0 20px",
-                  }}
-                >
-                  <span style={{ background: "#fff", padding: "0 10px" }}>OR</span>
-                </p>
-                <Button
-                  isLoading={googleLoading}
-                  leftIcon={<FcGoogle />}
-                  style={{
-                    width: "100%",
-                    marginTop: "5px",
-                    marginBottom: "10px",
-                  }}
-                  onClick={handleSignupGoogle}
-                >
-                  Sign up with Google
-                </Button>
-                <Button
-                  isLoading={facebookLoading}
-                  colorScheme="facebook"
-                  leftIcon={<CiFacebook size="21" />}
-                  style={{
-                    width: "100%",
-                    marginTop: "5px",
-                    marginBottom: "10px",
-                  }}
-                  onClick={handleSignupFacebook}
-                >
-                  Sign up with Facebook
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
-
+            <div>
+              <p
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderBottom: "1px solid #000",
+                  lineHeight: "0.1em",
+                  margin: "10px 0 20px",
+                }}
+              >
+                <span style={{ background: "#fff", padding: "0 10px" }}>OR</span>
+              </p>
+              <Button
+                isLoading={googleLoading}
+                leftIcon={<FcGoogle />}
+                style={{
+                  width: "100%",
+                  marginTop: "5px",
+                  marginBottom: "10px",
+                }}
+                onClick={handleSignupGoogle}
+              >
+                Sign up with Google
+              </Button>
+              <Button
+                isLoading={facebookLoading}
+                colorScheme="facebook"
+                leftIcon={<CiFacebook size="21" />}
+                style={{
+                  width: "100%",
+                  marginTop: "5px",
+                  marginBottom: "10px",
+                }}
+                onClick={handleSignupFacebook}
+              >
+                Sign up with Facebook
+              </Button>
+            </div>
             <div
               style={{
                 fontSize: "14px",

@@ -6,9 +6,9 @@ const INITIAL_STATE = {
     profileImg: "",
     dob: "",
     role: "",
-    isDelete: 0,
-    isVerified: 0,
-    isActive: 0,
+    isDelete: false,
+    isVerified: false,
+    isActive: false,
     provider: "common"
 }
 

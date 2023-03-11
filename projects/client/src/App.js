@@ -16,10 +16,11 @@ import VerifyPage from "./pages/VerifyPage";
 
 function App() {
   const [message, setMessage] = useState("");
-  const {email, provider} = useSelector( state => {
+  const {email, provider, isVerified} = useSelector( state => {
     return{
     email: state.userReducer.email,
-    provider: state.userReducer.provider
+    provider: state.userReducer.provider,
+    isVerify: state.userReducer.isVerified
   }})
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
@@ -48,9 +49,10 @@ function App() {
       }
     }
   // const [message, setMessage] = useState("");
-
+    
   useEffect(() => {
     keepLogin()
+    {console.log(isVerified)}
   }, [email]);
 
   return (

@@ -148,5 +148,44 @@ module.exports = {
                 message: "Database Error"
             });
         }
-    },
+    },verifyAcc: async (req, res) => {
+        try {
+          // read token user logging in
+          // update user
+          const { otp, phone } = req.body;
+          console.log(req.decrypt);
+          let user = await userModel.findOne({
+            where: { email: req.decrypt.email },
+          });
+          console.log(user);
+    
+          if (user.otp !== otp) {
+            return res.status(400).send({
+              success: false,
+              message: "OTP is not correct.",
+            });
+          }
+          const phoneNum = user.provider == "common" ? user.phone : phone
+          let userUpdate = await userModel.update(
+            { isVerified: 1,
+               phone: phoneNum
+            },
+            {
+              where: { email: req.decrypt.email },
+            }
+          );
+          res.status(200).send({
+            success: true,
+            message: "Your account is verified",
+            userUpdate,
+          });
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({
+            success: false,
+            message: "An error occured while verifying account.",
+            error,
+          });
+        }
+      },
 }

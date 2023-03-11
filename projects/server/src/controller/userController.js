@@ -131,9 +131,11 @@ module.exports = {
                     email: req.decrypt.email
                 }
             })
+            console.log(data[0].isVerified)
             let token = createToken({
                 ...data
             });
+            console.log(req.decrypt)
             if(data.length > 0){
                 return res.status(200).send({
                 success: true,

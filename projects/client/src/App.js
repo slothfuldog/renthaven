@@ -16,17 +16,19 @@ import VerifyPage from "./pages/VerifyPage";
 
 function App() {
   const [message, setMessage] = useState("");
-  const {email, provider, isVerified} = useSelector( state => {
+  const {email, provider, isVerified, isDeleted, check} = useSelector( state => {
     return{
     email: state.userReducer.email,
     provider: state.userReducer.provider,
-    isVerify: state.userReducer.isVerified
+    isVerify: state.userReducer.isVerified,
+    isDeleted: state.userReducer.isDeleted,
+    check: state.userReducer.check
   }})
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const dispatch = useDispatch();
   const keepLogin = async () =>{
     try {
-      setLoading(true)
+      
       let getLocalStorage = localStorage.getItem('renthaven1')
       if(getLocalStorage){
         let res = await Axios.post(process.env.REACT_APP_API_BASE_URL + `/signin/keep-login`,{}, {
@@ -52,8 +54,8 @@ function App() {
     
   useEffect(() => {
     keepLogin()
-    {console.log(isVerified)}
-  }, [email]);
+    {console.log(isVerified, provider, isDeleted, email)}
+  }, []);
 
   return (
     <div>

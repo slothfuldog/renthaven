@@ -8,14 +8,16 @@ const VerifyChecker = (props) => {
         }
     })
     const getLocalStorage = localStorage.getItem("renthaven1")
-    if(getLocalStorage){
-        if(isVerified == false){
-            return(<Navigate to = "/verify" />)
-        }
+    if(props.loading == false){
+        if(getLocalStorage){
+            if(isVerified == false || isVerified == 0){
+                return(<Navigate to = "/verify" />)
+            }
+                return props.children
+            }
+        else if(!getLocalStorage){
             return props.children
         }
-    else if(!getLocalStorage){
-        return props.children
     }
 }
 

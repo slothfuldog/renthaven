@@ -1,16 +1,19 @@
 require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
-const bearer = require("express-bearer-token")
+const bearer = require("express-bearer-token");
 const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(cors())
-app.use(bearer())
+app.use(cors());
+app.use(bearer());
 app.use(
   cors({
-    origin: [process.env.WHITELISTED_DOMAIN && process.env.WHITELISTED_DOMAIN.split(",")],
+    origin: [
+      process.env.WHITELISTED_DOMAIN &&
+        process.env.WHITELISTED_DOMAIN.split(","),
+    ],
   })
 );
 
@@ -21,7 +24,7 @@ app.use(express.json());
 // ===========================
 // NOTE : Add your routes here
 const { userRouter, categoryRouter } = require("./router");
-const { dbSequelize } = require("./config/db");
+const { dbSequelize, dbCheckConnection } = require("./config/db");
 app.use("/api", userRouter);
 app.use("/api", categoryRouter);
 
@@ -67,4 +70,5 @@ app.listen(PORT, (err) => {
   }
 });
 
-dbSequelize.sync();
+// dbSequelize.sync();
+dbCheckConnection();

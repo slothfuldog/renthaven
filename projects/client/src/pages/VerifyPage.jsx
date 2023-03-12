@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const VerifyPage = (props) => {
   const navigate = useNavigate();
-  //  test
+  //  testing
   const validationHandler = async () => {
     //validation func here
     try {

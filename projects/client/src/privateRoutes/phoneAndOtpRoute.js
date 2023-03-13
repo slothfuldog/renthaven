@@ -38,6 +38,5 @@ const VerifyChecker = (props) => {
         }
     }
   }
-};
 
 export default VerifyChecker;

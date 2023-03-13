@@ -17,16 +17,7 @@ import { Route, Routes } from "react-router-dom";
 
 function App() {
   const [message, setMessage] = useState("");
-  const { email, provider, isVerified, isDeleted, check } = useSelector((state) => {
-    return {
-      email: state.userReducer.email,
-      provider: state.userReducer.provider,
-      isVerify: state.userReducer.isVerified,
-      isDeleted: state.userReducer.isDeleted,
-      check: state.userReducer.check,
-    };
-  });
-  const [loading, setLoading] = useState(true);
+
   const {email, provider, isVerified, isDeleted, check} = useSelector( state => {
     return{
     email: state.userReducer.email,
@@ -38,6 +29,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const currentPath = window.location.pathname;
   const dispatch = useDispatch();
+
   const keepLogin = async () => {
     try {
       let getLocalStorage = localStorage.getItem("renthaven1");
@@ -87,13 +79,13 @@ function App() {
         />
         <Route path="/signup" element={<VerifyChecker loading = {loading}><SignupPanelPage /></VerifyChecker>} />
         <Route path="/signin" element={<VerifyChecker loading = {loading}><SigninPanelPage /></VerifyChecker>} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<VerifyChecker loading = {loading}><Profile /></VerifyChecker>} />
         <Route path="/verify" element={<VerifyChecker loading = {loading}><VerifyPage /></VerifyChecker>} />
         <Route path="/*" />
       </Routes>
       <Footer />
     </div>
-  );
+  )
 }
 
 export default App;

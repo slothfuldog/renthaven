@@ -208,14 +208,23 @@ const VerifyPage = (props) => {
                 onBlur={handleBlur}
               /> */}
             </FormControl>
-            <ButtonGroup>
-              <Button type="submit" onSubmit={handleSubmit}>
-                Click
-              </Button>
-              <Button type="button" onClick={sendOtpHandler}>
-                Send OTP
-              </Button>
-            </ButtonGroup>
+
+            {provider === "google.com" ? (
+              <div id="button-google">
+                <Button type="submit" onSubmit={handleSubmit}>
+                  Submit
+                </Button>
+              </div>
+            ) : (
+              <ButtonGroup>
+                <Button type="submit" onSubmit={handleSubmit}>
+                  Verify
+                </Button>
+                <Button type="button" onClick={sendOtpHandler}>
+                  Send OTP
+                </Button>
+              </ButtonGroup>
+            )}
           </form>
         </Box>
       </Flex>

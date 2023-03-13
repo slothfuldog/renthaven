@@ -1,7 +1,7 @@
 import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, } from "react-router-dom";
 import Landing from "./pages/Landing";
 import SignupPanelPage from "./pages/SignupPanel";
 import SigninPanelPage from "./pages/SigninPanel";
@@ -25,6 +25,7 @@ function App() {
     check: state.userReducer.check
   }})
   const [loading, setLoading] = useState(true)
+  const currentPath = window.location.pathname;
   const dispatch = useDispatch();
   const keepLogin = async () =>{
     try {
@@ -62,9 +63,9 @@ function App() {
       <Header loading = {loading}/>
       <Routes>
         <Route path="/" element={<VerifyChecker loading = {loading}><Landing /></VerifyChecker>} />
-        <Route path="/signup" element={<SignupPanelPage />} />
-        <Route path="/signin" element={<SigninPanelPage />} />
-        <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/signup" element={<VerifyChecker loading = {loading}><SignupPanelPage /></VerifyChecker>} />
+        <Route path="/signin" element={<VerifyChecker loading = {loading}><SigninPanelPage /></VerifyChecker>} />
+        <Route path="/verify" element={<VerifyChecker loading = {loading}><VerifyPage /></VerifyChecker>} />
         <Route path="/*" />
       </Routes>
       <Footer />

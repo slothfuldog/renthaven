@@ -1,5 +1,6 @@
 import { Box, Container, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import SigninTenantPage from "../components/SigninTenant";
 import SigninUserPage from "../components/SigninUser";
 
 const SigninPanelPage = (props) => {
@@ -42,7 +43,7 @@ const SigninPanelPage = (props) => {
             <SigninUserPage />
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <SigninTenantPage />
           </TabPanel>
         </TabPanels>
       </Tabs>

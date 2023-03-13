@@ -2,6 +2,8 @@ import { Box, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/r
 import "../styles/login.css"
 import SignupUserPage from "../components/SignupUser";
 import { useEffect, useState } from "react";
+import SignupTenant from "../components/SignupTenant";
+import SignupTenantPage from "../components/SignupTenant";
 
 const SignupPanelPage = (props) => {
   const [backgrounds, setBackground] = useState(["https://www.ahstatic.com/photos/5451_ho_00_p_1024x768.jpg", "https://cdn.loewshotels.com/loewshotels.com-2466770763/cms/cache/v2/5f5a6e0d12749.jpg/1920x1080/fit/80/86e685af18659ee9ecca35c465603812.jpg", "https://media-cdn.tripadvisor.com/media/photo-s/16/1a/ea/54/hotel-presidente-4s.jpg"])
@@ -43,7 +45,7 @@ const SignupPanelPage = (props) => {
             <SignupUserPage />
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <SignupTenantPage />
           </TabPanel>
         </TabPanels>
       </Tabs>

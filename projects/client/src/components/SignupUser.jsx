@@ -138,7 +138,7 @@ const SignupUserPage = (props) => {
             onToggle();
             setInfoIcon(false);
             setAlert("The email had already been registered");
-            setGoogleLoading(false);
+            setFacebookLoading(false);
           });
       })
       .catch((e) => {

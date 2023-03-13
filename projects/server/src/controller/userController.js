@@ -161,7 +161,7 @@ module.exports = {
           });
           console.log(user);
     
-          if (user.otp !== otp) {
+          if (user.otp !== otp && user.provider !== "google.com") {
             return res.status(400).send({
               success: false,
               message: "OTP is not correct.",

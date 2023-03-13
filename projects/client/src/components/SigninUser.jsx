@@ -104,7 +104,7 @@ const SigninUserPage = (props) => {
           setFacebookLoading(false);
         });
       })
-      .catch((e) => setFacebookLoading(false));
+      .catch((e) => {setFacebookLoading(false)});
   };
   const handleEmailLogin = () => {
     setLoginLoading(true);
@@ -134,8 +134,7 @@ const SigninUserPage = (props) => {
         }
         setLoginLoading(false);
       })
-      .catch((e) => {console.log(e)
-        setLoginLoading(false)});
+      .catch((e) => {setLoginLoading(false)});
   };
   const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
     initialValues: {

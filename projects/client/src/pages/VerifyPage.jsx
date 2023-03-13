@@ -1,4 +1,11 @@
-import { Box, Button, Flex, FormControl, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  FormControl,
+  Input,
+} from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { useSelector } from "react-redux";
 import * as yup from "yup";
@@ -8,6 +15,31 @@ import { useNavigate } from "react-router-dom";
 
 const VerifyPage = (props) => {
   const navigate = useNavigate();
+
+  const sendOtpHandler = async () => {
+    try {
+      let getLocalStorage = localStorage.getItem("renthaven1");
+
+      if (getLocalStorage) {
+        let res = await Axios.post(
+          process.env.REACT_APP_API_BASE_URL + "/sendotp",
+          {},
+          { headers: { Authorization: `Bearer ${getLocalStorage}` } }
+        );
+
+        if (res.data.success) {
+          Swal.fire({
+            title: `${res.data.message}`,
+            icon: "success",
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#48BB78",
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const validationHandler = async () => {
     //validation func here
     try {
@@ -176,9 +208,14 @@ const VerifyPage = (props) => {
                 onBlur={handleBlur}
               /> */}
             </FormControl>
-            <Button type="submit" onSubmit={handleSubmit}>
-              Click
-            </Button>
+            <ButtonGroup>
+              <Button type="submit" onSubmit={handleSubmit}>
+                Click
+              </Button>
+              <Button type="button" onClick={sendOtpHandler}>
+                Send OTP
+              </Button>
+            </ButtonGroup>
           </form>
         </Box>
       </Flex>

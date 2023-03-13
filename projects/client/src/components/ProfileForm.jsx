@@ -6,51 +6,63 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { useFormik } from "formik";
 import { profileSchema } from "../schemas/profileValidator";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 function ProfileForm(props) {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [userData, setUserData] = React.useState({
-    name: "daniel",
-    dob: "",
-    gender: "",
-    email: "ds@gmail.com",
-    provider: "common",
+
+  const { email, name, gender, dob, provider } = useSelector((state) => {
+    return {
+      email: state.userReducer.email,
+      name: state.userReducer.name,
+      gender: state.userReducer.gender,
+      dob: state.userReducer.dob,
+      provider: state.userReducer.provider,
+    };
   });
 
   const onBtnUpdatePass = async () => {
     const { oldPass, password, confirmPassword } = values;
     if (oldPass !== "" || password !== "" || confirmPassword !== "") {
-      if (userData.provider !== "common") {
+      if (provider !== "common") {
         Swal.fire({
           icon: "info",
-          text: `Sorry you cant update your password if you login with a ${userData.provider} account`,
+          title: `Sorry you cant update your password if you login with a ${provider} account`,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#48BB78",
         });
       } else if (password !== confirmPassword) {
         Swal.fire({
           icon: "error",
-          text: `Password and Password Confirmation didn't match`,
+          title: `Password and Password Confirmation didn't match`,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#48BB78",
         });
       } else {
         setIsLoading(true);
         try {
           let response = await Axios.patch(
             process.env.REACT_APP_API_BASE_URL + "/user/change-password",
-            { oldPass, password, email: userData.email, provider: userData.email }
+            { oldPass, password, email: email, provider: email }
           );
           Swal.fire({
             icon: "success",
-            text: response.data.message,
+            title: response.data.message,
             showConfirmButton: false,
             timer: 1500,
+          }).then(() => {
+            setFieldValue("oldPass", "", false);
+            setFieldValue("password", "", false);
+            setFieldValue("confirmPassword", "", false);
+            window.location.reload();
           });
-          setFieldValue("oldPass", "", false);
-          setFieldValue("password", "", false);
-          setFieldValue("confirmPassword", "", false);
         } catch (error) {
           console.log(error);
           Swal.fire({
             icon: "error",
-            text: error.response.data.message,
+            title: error.response.data.message,
+            confirmButtonText: "OK",
+            confirmButtonColor: "#48BB78",
           });
         }
       }
@@ -94,28 +106,28 @@ function ProfileForm(props) {
       <Flex direction="column" gap={8}>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Name</Text>
-          <Text textTransform="capitalize">{userData.name}</Text>
+          <Text textTransform="capitalize">{name}</Text>
           <Button size="sm" colorScheme="green" variant="link">
             Edit
           </Button>
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Date of Birth</Text>
-          <Text>{userData.dob === "" ? `Not Set Yet` : userData.dob}</Text>
+          <Text>{dob === null ? `Not Set Yet` : dob}</Text>
           <Button size="sm" colorScheme="green" variant="link">
             Edit
           </Button>
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Gender</Text>
-          <Text>{userData.gender === "" ? `Not Set Yet` : userData.gender}</Text>
+          <Text>{gender === null ? `Not Set Yet` : gender}</Text>
           <Button size="sm" colorScheme="green" variant="link">
             Edit
           </Button>
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Email</Text>
-          <Text>{userData.email}</Text>
+          <Text>{email}</Text>
           <Button size="sm" colorScheme="green" variant="link">
             Edit
           </Button>

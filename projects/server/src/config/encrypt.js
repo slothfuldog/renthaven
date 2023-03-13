@@ -17,7 +17,6 @@ module.exports = {
                     message: "Authenticate token failed!"
                 })
             }
-
             req.decrypt = decrypt[0];
             next();
         })

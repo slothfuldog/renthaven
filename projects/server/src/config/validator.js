@@ -4,7 +4,7 @@ module.exports = {
   checkUser: async (req, res, next) => {
     try {
       //Validation proses
-      if (req.body.provider == "common") {
+      if (req.body.regis == "common") {
         await check("email").notEmpty().isEmail().run(req);
         await check("password")
           .notEmpty()

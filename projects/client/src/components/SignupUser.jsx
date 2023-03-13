@@ -7,26 +7,27 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
+  ScaleFade,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { auth, provider, providerFacebook } from "../config/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, getAuth, deleteUser } from "firebase/auth";
 import Axios from "axios";
 import { useFormik } from "formik";
-import { basicSchema } from "../schemas/signupValidator";
+import * as yup from "yup";
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
+import { loginAction } from "../actions/userAction";
+import { basicSchema } from "../schemas/signupValidator";
 
 const SignupUserPage = (props) => {
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [alerts, setAlert] = useState("");
   const [normalReg, setReg] = useState("common");
@@ -35,68 +36,115 @@ const SignupUserPage = (props) => {
   const [signupLoading, setSignupLoading] = useState(false);
   const [infoIcon, setInfoIcon] = useState(false);
   const handleClick = () => setShow(!show);
+  const { isOpen, onToggle } = useDisclosure();
   const navigate = useNavigate();
   //signup handle section
   const handleSignupGoogle = () => {
     setGoogleLoading(true);
     signInWithPopup(auth, provider)
       .then((data) => {
-        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/user", {
+        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
+          name: data._tokenResponse.displayName,
           email: data._tokenResponse.email,
-        }).then((res) => {
-          console.log(res.status);
-          if (res.data.success == false) {
-            setAlert("The email had already been registered");
+          phone: "-",
+          provider: data._tokenResponse.providerId,
+        })
+          .then((res) => {
+            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+              login: data._tokenResponse.providerId,
+              email: data._tokenResponse.email,
+            })
+              .then((result) => {
+                localStorage.setItem("renthaven1", result.data.token);
+                loginAction(result.data.result);
+                Swal.fire({
+                  title: "Registration Success!",
+                  icon: "success",
+                  confirmButtonText: "Confirm",
+                  confirmButtonColor: "#48BB78",
+                })
+                  .then((res) => {
+                    navigate("/verify", { replace: true });
+                    localStorage.setItem("renthaven1", result.data.token);
+                    window.location.reload();
+                  })
+                  .catch((e) => {
+                    console.log(e);
+                  });
+              })
+              .catch((e) => {
+                onToggle();
+                setInfoIcon(false);
+                setAlert("The email had already been registered");
+                setGoogleLoading(false);
+              });
+            setGoogleLoading(false);
+          })
+          .catch((e) => {
+            onToggle();
             setInfoIcon(false);
+            setAlert("The email had already been registered");
             setGoogleLoading(false);
-          } else {
-            setFieldValue("name", data._tokenResponse.displayName);
-            setFieldValue("email", data._tokenResponse.email);
-            setReg("firebase");
-            setAlert("You are almost there, please complete the form to finish the registration!");
-            setInfoIcon(true);
-            setGoogleLoading(false);
-          }
-        });
+          });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
           setGoogleLoading(false);
-        } else {
-          console.log(e);
-          setAlert("The email had already been registered");
+        } else if (e.response.status == 409) {
+          onToggle();
           setInfoIcon(false);
+          setAlert("The email had already been registered");
           setGoogleLoading(false);
         }
+        setGoogleLoading(false);
       });
   };
   const handleSignupFacebook = () => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
       .then((data) => {
-        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/user", {
+        Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
+          name: data._tokenResponse.displayName,
           email: data._tokenResponse.email,
+          phone: "-",
+          provider: data._tokenResponse.providerId,
         }).then((res) => {
-          if (res.data.success == false) {
-            setAlert("The email had already been registered");
-            setInfoIcon(false);
-            setFacebookLoading(false);
-          } else {
-            setFieldValue("name", data._tokenResponse.displayName);
-            setFieldValue("email", data._tokenResponse.email);
-            setReg("firebase");
-            setAlert("You are almost there, please complete the form to finish the registration!");
-            setInfoIcon(true);
-            setFacebookLoading(false);
-          }
+          Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+            login: data._tokenResponse.providerId,
+            email: data._tokenResponse.email,
+          })
+            .then((result) => {
+              localStorage.setItem("renthaven1", result.data.token);
+              loginAction(result.data.result);
+              Swal.fire({
+                title: "Registration Success!",
+                icon: "success",
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#48BB78",
+              })
+                .then((res) => {
+                  navigate("/verify", { replace: true });
+                  localStorage.setItem("renthaven1", result.data.token);
+                  window.location.reload();
+                })
+                .catch((e) => {
+                  console.log(e);
+                });
+            })
+            .catch((e) => {
+              onToggle();
+              setInfoIcon(false);
+              setAlert("The email had already been registered");
+              setFacebookLoading(false);
+            });
+          setFacebookLoading(false);
         });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
-          console.log("hello");
           setFacebookLoading(false);
         } else {
-          console.log(e);
+          onToggle();
           setAlert("The email had already been registered");
           setInfoIcon(false);
           setFacebookLoading(false);
@@ -105,47 +153,56 @@ const SignupUserPage = (props) => {
   };
   const registerHandler = () => {
     setSignupLoading(true);
-    if (normalReg == "firebase") {
-      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        regis: normalReg,
-      })
-        .then((res) => {
-          Swal.fire({
-            title: "Registration Success!",
-            icon: "success",
-            confirmButtonText: "Confirm",
-            confirmButtonColor: "#48BB78",
-          }).then((res) => {
-            navigate("/signin", { replace: true });
-          });
-          setSignupLoading(false);
-        })
-        .catch((e) => setSignupLoading(false));
-    } else {
+    if (normalReg == "common") {
       Axios.post(process.env.REACT_APP_API_BASE_URL + "/signup/new-user", {
         name: values.name,
         email: values.email,
         password: values.password,
         phone: values.phone,
-        regis: normalReg,
+        provider: "common",
       })
         .then((res) => {
-          Swal.fire({
-            title: "Registration Success!",
-            icon: "success",
-            confirmButtonText: "Confirm",
-            confirmButtonColor: "#48BB78",
-          }).then((res) => {
-            navigate("/signin", { replace: true });
-          });
+          if (res.data.success === true)
+            Swal.fire({
+              title: "Registration Success!",
+              icon: "success",
+              confirmButtonText: "Confirm",
+              confirmButtonColor: "#48BB78",
+            }).then((res) => {
+              Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+                login: normalReg,
+                email: values.email,
+                password: values.password,
+              }).then((res) => {
+                if (res.data.success == true) {
+                  navigate("/verify", { replace: true });
+                  localStorage.setItem("renthaven1", res.data.token);
+                  loginAction(res.data.result);
+                  window.location.reload();
+                }
+              });
+            });
+          else if (res.data.success === false) {
+            setAlert("The email had already been registered");
+            onToggle();
+            setSignupLoading(false);
+          }
           setSignupLoading(false);
         })
-        .catch((e) => setSignupLoading(false));
+        .catch((e) => {
+          if (e.response.status == 403) {
+            setAlert("The email had already been registered");
+            onToggle();
+            setSignupLoading(false);
+          }
+          console.log(e);
+          setSignupLoading(false);
+        });
     }
   };
+  const passwordRules = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  //password must contains 8 chars, one uppercase, one lowercase, one number and one special characters
+
   //Formik configuration
   const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
     useFormik({
@@ -159,10 +216,9 @@ const SignupUserPage = (props) => {
       validationSchema: basicSchema,
       onSubmit: registerHandler,
     });
-
   useEffect(() => {
     document.title = "Signup RentHaven";
-  }, []);
+  }, [alerts]);
   return (
     <div>
       <Box>
@@ -180,20 +236,10 @@ const SignupUserPage = (props) => {
               paddingTop: "25px",
             }}
           >
-            {/* <p
-              className="fw-bold"
-              style={{
-                fontSize: "28px",
-                textAlign: "center",
-                marginBottom: "30px",
-              }}
-            >
-              Sign Up
-            </p> */}
             {alerts == "" ? (
               ""
             ) : (
-              <Alert status={infoIcon == false ? "error" : "info"} style={{ marginBottom: "5px" }}>
+              <Alert status={infoIcon ? "info" : "error"} style={{ marginBottom: "20px" }}>
                 <AlertIcon />
                 {alerts}
               </Alert>
@@ -204,7 +250,6 @@ const SignupUserPage = (props) => {
               </p>
               <FormControl isRequired>
                 <Input
-                  focusBorderColor="green.400"
                   isInvalid={errors.name && touched.name ? true : false}
                   id="name"
                   style={{ marginTop: "5px" }}
@@ -241,7 +286,6 @@ const SignupUserPage = (props) => {
               </p>
               <FormControl isRequired>
                 <Input
-                  focusBorderColor="green.400"
                   isInvalid={errors.phone && touched.phone ? true : false}
                   id="phone"
                   value={values.phone}
@@ -262,6 +306,7 @@ const SignupUserPage = (props) => {
                   <FormControl isRequired>
                     <InputGroup size="md" style={{ marginTop: "5px" }}>
                       <Input
+                        focusBorderColor="green.400"
                         isInvalid={errors.password && touched.password ? true : false}
                         id="password"
                         type={show ? "text" : "password"}
@@ -322,54 +367,49 @@ const SignupUserPage = (props) => {
                   marginBottom: "10px",
                 }}
                 type="submit"
-                onClick={registerHandler}
+                onSubmit={handleSubmit}
               >
                 Sign up
               </Button>
             </form>
-            {normalReg === "common" ? (
-              <div>
-                <p
-                  style={{
-                    width: "100%",
-                    textAlign: "center",
-                    borderBottom: "1px solid #000",
-                    lineHeight: "0.1em",
-                    margin: "10px 0 20px",
-                  }}
-                >
-                  <span style={{ background: "#fff", padding: "0 10px" }}>OR</span>
-                </p>
-                <Button
-                  isLoading={googleLoading}
-                  leftIcon={<FcGoogle />}
-                  style={{
-                    width: "100%",
-                    marginTop: "5px",
-                    marginBottom: "10px",
-                  }}
-                  onClick={handleSignupGoogle}
-                >
-                  Sign up with Google
-                </Button>
-                <Button
-                  isLoading={facebookLoading}
-                  colorScheme="facebook"
-                  leftIcon={<CiFacebook size="21" />}
-                  style={{
-                    width: "100%",
-                    marginTop: "5px",
-                    marginBottom: "10px",
-                  }}
-                  onClick={handleSignupFacebook}
-                >
-                  Sign up with Facebook
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
-
+            <div>
+              <p
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderBottom: "1px solid #000",
+                  lineHeight: "0.1em",
+                  margin: "10px 0 20px",
+                }}
+              >
+                <span style={{ background: "#fff", padding: "0 10px" }}>OR</span>
+              </p>
+              <Button
+                isLoading={googleLoading}
+                leftIcon={<FcGoogle />}
+                style={{
+                  width: "100%",
+                  marginTop: "5px",
+                  marginBottom: "10px",
+                }}
+                onClick={handleSignupGoogle}
+              >
+                Sign up with Google
+              </Button>
+              <Button
+                isLoading={facebookLoading}
+                colorScheme="facebook"
+                leftIcon={<CiFacebook size="21" />}
+                style={{
+                  width: "100%",
+                  marginTop: "5px",
+                  marginBottom: "10px",
+                }}
+                onClick={handleSignupFacebook}
+              >
+                Sign up with Facebook
+              </Button>
+            </div>
             <div
               style={{
                 fontSize: "14px",

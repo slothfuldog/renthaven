@@ -11,17 +11,15 @@ function Profile(props) {
   }, []);
   return (
     <>
-      <Header />
       <Container maxW={{ md: "container.lg" }} my="50px">
         <Flex direction="column" p="4" border="1px" borderColor="#ccc" rounded="md">
-          <Heading>User's Profile</Heading>
+          <Heading>Your Profile</Heading>
           <Flex mt={3} gap={6} direction={{ base: "column", md: "row" }}>
             <ProfileCard />
             <ProfileForm />
           </Flex>
         </Flex>
       </Container>
-      <Footer />
     </>
   );
 }

@@ -4,6 +4,8 @@ import {
   ButtonGroup,
   Flex,
   FormControl,
+  FormHelperText,
+  Heading,
   Input,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
@@ -120,11 +122,19 @@ const VerifyPage = (props) => {
   });
   return (
     <Box>
-      <Flex justifyContent="center" alignItems="center">
-        <Box>
-          verify
+      <Flex justifyContent="center" alignItems="center" minW={"30%"}>
+        <Box
+          border={"1px"}
+          p={"6"}
+          my={"50"}
+          borderColor={"#ccc"}
+          rounded={"md"}
+        >
+          <Box textAlign={"center"} mb={"8"}>
+            <Heading>Verify</Heading>
+          </Box>
           <form onSubmit={handleSubmit}>
-            <FormControl isRequired>
+            <FormControl isRequired mb={"6"}>
               {provider !== "common" && provider !== "google.com" ? (
                 <div id="fb">
                   <p>Phone:</p>
@@ -207,8 +217,23 @@ const VerifyPage = (props) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               /> */}
-            </FormControl>
 
+              {provider === "google.com" ? null : (
+                <FormHelperText>
+                  Have not receive your OTP?
+                  <Button
+                    type="button"
+                    colorScheme={"green"}
+                    variant={"link"}
+                    size={"xs"}
+                    onClick={sendOtpHandler}
+                    ms={"1"}
+                  >
+                    Send OTP
+                  </Button>
+                </FormHelperText>
+              )}
+            </FormControl>
             {provider === "google.com" ? (
               <div id="button-google">
                 <Button type="submit" onSubmit={handleSubmit}>
@@ -216,14 +241,17 @@ const VerifyPage = (props) => {
                 </Button>
               </div>
             ) : (
-              <ButtonGroup>
-                <Button type="submit" onSubmit={handleSubmit}>
-                  Verify
-                </Button>
-                <Button type="button" onClick={sendOtpHandler}>
-                  Send OTP
-                </Button>
-              </ButtonGroup>
+              <Flex justifyContent={"end"}>
+                <ButtonGroup>
+                  <Button
+                    colorScheme={"green"}
+                    type="submit"
+                    onSubmit={handleSubmit}
+                  >
+                    Verify
+                  </Button>
+                </ButtonGroup>
+              </Flex>
             )}
           </form>
         </Box>

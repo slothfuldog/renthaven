@@ -201,17 +201,19 @@ module.exports = {
       }
 
       const check = bcrypt.compareSync(oldPass, data[0].password);
+      console.log(check);
 
-      if (check) {
+      if (check != false) {
         const pass = encryptPassword(password);
         const update = await userModel.update(
-          { pass },
+          { password: pass },
           {
             where: {
               email: email,
             },
           }
         );
+        console.log(`update`, update);
         if (update) {
           return res.status(200).send({
             success: true,

@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-const FILE_SIZE = 150000;
+const FILE_SIZE = 1000000;
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 export const profilePictureSchema = yup.object().shape({

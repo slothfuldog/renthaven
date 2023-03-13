@@ -11,7 +11,10 @@
 }
 
 .main-content .swiper-slide {
-  margin: 12px 12px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .main-content .swiper-button-next {

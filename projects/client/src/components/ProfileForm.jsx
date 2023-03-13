@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import { profileSchema } from "../schemas/profileValidator";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
+import { nullLiteral } from "@babel/types";
 
 function ProfileForm(props) {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -113,14 +114,14 @@ function ProfileForm(props) {
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Date of Birth</Text>
-          <Text>{dob === null ? `Not Set Yet` : dob}</Text>
+          <Text>{dob === null ? `not set yet` : dob}</Text>
           <Button size="sm" colorScheme="green" variant="link">
             Edit
           </Button>
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Gender</Text>
-          <Text>{gender === null ? `Not Set Yet` : gender}</Text>
+          <Text>{gender === null ? `not set yet` : gender}</Text>
           <Button size="sm" colorScheme="green" variant="link">
             Edit
           </Button>
@@ -128,100 +129,104 @@ function ProfileForm(props) {
         <Flex direction="row" gap={4}>
           <Text minW="35%">Email</Text>
           <Text>{email}</Text>
-          <Button size="sm" colorScheme="green" variant="link">
-            Edit
-          </Button>
+          {provider !== "common" ? null : (
+            <Button size="sm" colorScheme="green" variant="link">
+              Edit
+            </Button>
+          )}
         </Flex>
       </Flex>
-      <Divider />
 
-      <form onSubmit={handleSubmit}>
-        <Flex direction="column" gap={4}>
-          <Heading size="md">Password</Heading>
-          <Flex direction="row" align="center">
-            {/* OLD PASSWORD */}
-            <Text minW="40%">Current Password</Text>
-            <FormControl isInvalid={errors.oldPass && touched.oldPass ? true : false}>
-              <InputGroup>
-                <Input
-                  type={showOldPass ? "text" : "password"}
-                  id="oldPass"
-                  value={values.oldPass}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <InputRightElement width="3.5rem">
-                  <Button h="1.75rem" size="sm" onClick={() => handleClick(1)}>
-                    {showOldPass ? <AiFillEyeInvisible /> : <AiFillEye />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage fontSize="xs" m="auto">
-                {errors.oldPass}
-              </FormErrorMessage>
-            </FormControl>
+      {provider === "common" ? (
+        <form onSubmit={handleSubmit}>
+          <Divider my="4" />
+          <Flex direction="column" gap={4}>
+            <Heading size="md">Password</Heading>
+            <Flex direction="row" align="center">
+              {/* OLD PASSWORD */}
+              <Text minW="40%">Current Password</Text>
+              <FormControl isInvalid={errors.oldPass && touched.oldPass ? true : false}>
+                <InputGroup>
+                  <Input
+                    type={showOldPass ? "text" : "password"}
+                    id="oldPass"
+                    value={values.oldPass}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <InputRightElement width="3.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => handleClick(1)}>
+                      {showOldPass ? <AiFillEyeInvisible /> : <AiFillEye />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage fontSize="xs" m="auto">
+                  {errors.oldPass}
+                </FormErrorMessage>
+              </FormControl>
+            </Flex>
+            <Flex direction="row" align="center">
+              {/* NEW PASSWORD */}
+              <Text minW="40%">New Password</Text>
+              <FormControl isInvalid={errors.password && touched.password ? true : false}>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <InputRightElement width="3.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => handleClick(2)}>
+                      {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage fontSize="xs" m="auto">
+                  {errors.password}
+                </FormErrorMessage>
+              </FormControl>
+            </Flex>
+            <Flex direction="row" align="center">
+              {/* CONFIRM PASSWORD */}
+              <Text minW="40%">Confirm New Password</Text>
+              <FormControl
+                isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
+              >
+                <InputGroup>
+                  <Input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <InputRightElement width="3.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => handleClick(3)}>
+                      {showConfirmPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage fontSize="xs" m="auto">
+                  {errors.confirmPassword}
+                </FormErrorMessage>
+              </FormControl>
+            </Flex>
+            <Flex justify="end">
+              <Button
+                isLoading={isLoading}
+                onClick={onBtnUpdatePass}
+                type="submit"
+                colorScheme="green"
+                variant="outline"
+              >
+                Update Password
+              </Button>
+            </Flex>
           </Flex>
-          <Flex direction="row" align="center">
-            {/* NEW PASSWORD */}
-            <Text minW="40%">New Password</Text>
-            <FormControl isInvalid={errors.password && touched.password ? true : false}>
-              <InputGroup>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <InputRightElement width="3.5rem">
-                  <Button h="1.75rem" size="sm" onClick={() => handleClick(2)}>
-                    {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage fontSize="xs" m="auto">
-                {errors.password}
-              </FormErrorMessage>
-            </FormControl>
-          </Flex>
-          <Flex direction="row" align="center">
-            {/* CONFIRM PASSWORD */}
-            <Text minW="40%">Confirm New Password</Text>
-            <FormControl
-              isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
-            >
-              <InputGroup>
-                <Input
-                  type={showConfirmPassword ? "text" : "password"}
-                  id="confirmPassword"
-                  value={values.confirmPassword}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <InputRightElement width="3.5rem">
-                  <Button h="1.75rem" size="sm" onClick={() => handleClick(3)}>
-                    {showConfirmPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage fontSize="xs" m="auto">
-                {errors.confirmPassword}
-              </FormErrorMessage>
-            </FormControl>
-          </Flex>
-          <Flex justify="end">
-            <Button
-              isLoading={isLoading}
-              onClick={onBtnUpdatePass}
-              type="submit"
-              colorScheme="green"
-              variant="outline"
-            >
-              Update Password
-            </Button>
-          </Flex>
-        </Flex>
-      </form>
+        </form>
+      ) : null}
     </Flex>
   );
 }

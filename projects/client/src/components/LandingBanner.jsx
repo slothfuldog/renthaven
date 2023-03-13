@@ -21,10 +21,10 @@ function LandingBanner(props) {
         grabCursor={true}
         centeredSlides={true}
         autoplay={{
-          delay: 2500,
+          delay: 3500,
           disableOnInteraction: false,
         }}
-        className="landing-bannner"
+        className="landing-banner"
       >
         <SwiperSlide>
           <Image

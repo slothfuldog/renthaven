@@ -53,28 +53,31 @@ const SignupUserPage = (props) => {
             Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
               login: data._tokenResponse.providerId,
               email: data._tokenResponse.email,
-            }).then((result) => {
-              localStorage.setItem("renthaven1", result.data.token);
-              loginAction(result.data.result)
-              Swal.fire({
-                title: "Registration Success!",
-                icon: "success",
-                confirmButtonText: "Confirm",
-                confirmButtonColor: "#48BB78",
-              })
-                .then((res) => {
+            })
+              .then((result) => {
+                localStorage.setItem("renthaven1", result.data.token);
+                loginAction(result.data.result);
+                Swal.fire({
+                  title: "Registration Success!",
+                  icon: "success",
+                  confirmButtonText: "Confirm",
+                  confirmButtonColor: "#48BB78",
+                })
+                  .then((res) => {
                     navigate("/verify", { replace: true });
                     localStorage.setItem("renthaven1", result.data.token);
                     window.location.reload();
-                }).catch(e =>{
-                  console.log(e)
-                })
-            }).catch((e) =>{
-              onToggle();
-            setInfoIcon(false);
-            setAlert("The email had already been registered");
-            setGoogleLoading(false);
-            })
+                  })
+                  .catch((e) => {
+                    console.log(e);
+                  });
+              })
+              .catch((e) => {
+                onToggle();
+                setInfoIcon(false);
+                setAlert("The email had already been registered");
+                setGoogleLoading(false);
+              });
             setGoogleLoading(false);
           })
           .catch((e) => {
@@ -105,14 +108,14 @@ const SignupUserPage = (props) => {
           email: data._tokenResponse.email,
           phone: "-",
           provider: data._tokenResponse.providerId,
-        })
-          .then((res) => {
-            Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-              login: data._tokenResponse.providerId,
-              email: data._tokenResponse.email,
-            }).then((result) => {
+        }).then((res) => {
+          Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+            login: data._tokenResponse.providerId,
+            email: data._tokenResponse.email,
+          })
+            .then((result) => {
               localStorage.setItem("renthaven1", result.data.token);
-              loginAction(result.data.result)
+              loginAction(result.data.result);
               Swal.fire({
                 title: "Registration Success!",
                 icon: "success",
@@ -120,26 +123,22 @@ const SignupUserPage = (props) => {
                 confirmButtonColor: "#48BB78",
               })
                 .then((res) => {
-                    navigate("/verify", { replace: true });
-                    localStorage.setItem("renthaven1", result.data.token);
-                    window.location.reload();
-                }).catch(e =>{
-                  console.log(e)
+                  navigate("/verify", { replace: true });
+                  localStorage.setItem("renthaven1", result.data.token);
+                  window.location.reload();
                 })
-            }).catch((e) =>{
-              onToggle();
-            setInfoIcon(false);
-            setAlert("The email had already been registered");
-            setFacebookLoading(false);
+                .catch((e) => {
+                  console.log(e);
+                });
             })
-            setFacebookLoading(false);
-          })
-          .catch((e) => {
-            onToggle();
-            setInfoIcon(false);
-            setAlert("The email had already been registered");
-            setFacebookLoading(false);
-          });
+            .catch((e) => {
+              onToggle();
+              setInfoIcon(false);
+              setAlert("The email had already been registered");
+              setFacebookLoading(false);
+            });
+          setFacebookLoading(false);
+        });
       })
       .catch((e) => {
         if (e.message == "Firebase: Error (auth/popup-closed-by-user).") {
@@ -299,59 +298,65 @@ const SignupUserPage = (props) => {
               ) : (
                 ""
               )}
+              {normalReg === "common" ? (
+                <div>
+                  <p style={{ marginTop: "10px" }}>
+                    Password <span style={{ color: "red" }}>*</span>
+                  </p>
+                  <FormControl isRequired>
+                    <InputGroup size="md" style={{ marginTop: "5px" }}>
+                      <Input
+                        focusBorderColor="green.400"
+                        isInvalid={errors.password && touched.password ? true : false}
+                        id="password"
+                        type={show ? "text" : "password"}
+                        value={values.password}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <InputRightElement width="3.5rem">
+                        <Button h="1.75rem" size="sm" onClick={handleClick}>
+                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                  </FormControl>
+                  {errors.password && touched.password ? (
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
+                  ) : (
+                    ""
+                  )}
+                  <p style={{ marginTop: "10px" }}>
+                    Confirm password <span style={{ color: "red" }}>*</span>
+                  </p>
+                  <FormControl isRequired>
+                    <InputGroup size="md" style={{ marginTop: "5px" }}>
+                      <Input
+                        focusBorderColor="green.400"
+                        isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
+                        id="confirmPassword"
+                        type={show ? "text" : "password"}
+                        value={values.confirmPassword}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <InputRightElement width="3.5rem">
+                        <Button h="1.75rem" size="sm" onClick={handleClick}>
+                          {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                  </FormControl>
+                  {errors.confirmPassword && touched.confirmPassword ? (
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              ) : (
+                ""
+              )}
 
-              <div>
-                <p style={{ marginTop: "10px" }}>
-                  Password <span style={{ color: "red" }}>*</span>
-                </p>
-                <FormControl isRequired>
-                  <InputGroup size="md" style={{ marginTop: "5px" }}>
-                    <Input
-                      isInvalid={errors.password && touched.password ? true : false}
-                      id="password"
-                      type={show ? "text" : "password"}
-                      value={values.password}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <InputRightElement width="3.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleClick}>
-                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                {errors.password && touched.password ? (
-                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
-                ) : (
-                  ""
-                )}
-                <p style={{ marginTop: "10px" }}>
-                  Confirm password <span style={{ color: "red" }}>*</span>
-                </p>
-                <FormControl isRequired>
-                  <InputGroup size="md" style={{ marginTop: "5px" }}>
-                    <Input
-                      isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
-                      id="confirmPassword"
-                      type={show ? "text" : "password"}
-                      value={values.confirmPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <InputRightElement width="3.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleClick}>
-                        {show ? <AiFillEyeInvisible /> : <AiFillEye />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                {errors.confirmPassword && touched.confirmPassword ? (
-                  <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
-                ) : (
-                  ""
-                )}
-              </div>
               <Button
                 isLoading={signupLoading}
                 variant="solid"

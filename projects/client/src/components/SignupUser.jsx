@@ -53,9 +53,7 @@ const SignupUserPage = (props) => {
             setFieldValue("name", data._tokenResponse.displayName);
             setFieldValue("email", data._tokenResponse.email);
             setReg("firebase");
-            setAlert(
-              "You are almost there, please complete the form to finish the registration!"
-            );
+            setAlert("You are almost there, please complete the form to finish the registration!");
             setInfoIcon(true);
             setGoogleLoading(false);
           }
@@ -87,9 +85,7 @@ const SignupUserPage = (props) => {
             setFieldValue("name", data._tokenResponse.displayName);
             setFieldValue("email", data._tokenResponse.email);
             setReg("firebase");
-            setAlert(
-              "You are almost there, please complete the form to finish the registration!"
-            );
+            setAlert("You are almost there, please complete the form to finish the registration!");
             setInfoIcon(true);
             setFacebookLoading(false);
           }
@@ -151,25 +147,18 @@ const SignupUserPage = (props) => {
     }
   };
   //Formik configuration
-  const {
-    values,
-    errors,
-    touched,
-    handleBlur,
-    handleChange,
-    setFieldValue,
-    handleSubmit,
-  } = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      phone: "",
-    },
-    validationSchema: basicSchema,
-    onSubmit: registerHandler,
-  });
+  const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
+    useFormik({
+      initialValues: {
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+      },
+      validationSchema: basicSchema,
+      onSubmit: registerHandler,
+    });
 
   useEffect(() => {
     document.title = "Signup RentHaven";
@@ -204,10 +193,7 @@ const SignupUserPage = (props) => {
             {alerts == "" ? (
               ""
             ) : (
-              <Alert
-                status={infoIcon == false ? "error" : "info"}
-                style={{ marginBottom: "5px" }}
-              >
+              <Alert status={infoIcon == false ? "error" : "info"} style={{ marginBottom: "5px" }}>
                 <AlertIcon />
                 {alerts}
               </Alert>
@@ -228,9 +214,7 @@ const SignupUserPage = (props) => {
                 />
               </FormControl>
               {errors.name && touched.name ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.name}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.name}</p>
               ) : (
                 ""
               )}
@@ -239,7 +223,6 @@ const SignupUserPage = (props) => {
               </p>
               <FormControl isRequired>
                 <Input
-                  focusBorderColor="green.400"
                   isInvalid={errors.email && touched.email ? true : false}
                   id="email"
                   style={{ marginTop: "5px" }}
@@ -249,9 +232,7 @@ const SignupUserPage = (props) => {
                 />
               </FormControl>
               {errors.email && touched.email ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.email}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.email}</p>
               ) : (
                 ""
               )}
@@ -269,9 +250,7 @@ const SignupUserPage = (props) => {
                 />
               </FormControl>
               {errors.phone && touched.phone ? (
-                <p style={{ color: "red", marginBottom: "5px" }}>
-                  {errors.phone}
-                </p>
+                <p style={{ color: "red", marginBottom: "5px" }}>{errors.phone}</p>
               ) : (
                 ""
               )}
@@ -283,10 +262,7 @@ const SignupUserPage = (props) => {
                   <FormControl isRequired>
                     <InputGroup size="md" style={{ marginTop: "5px" }}>
                       <Input
-                        focusBorderColor="green.400"
-                        isInvalid={
-                          errors.password && touched.password ? true : false
-                        }
+                        isInvalid={errors.password && touched.password ? true : false}
                         id="password"
                         type={show ? "text" : "password"}
                         value={values.password}
@@ -301,9 +277,7 @@ const SignupUserPage = (props) => {
                     </InputGroup>
                   </FormControl>
                   {errors.password && touched.password ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>
-                      {errors.password}
-                    </p>
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.password}</p>
                   ) : (
                     ""
                   )}
@@ -314,11 +288,7 @@ const SignupUserPage = (props) => {
                     <InputGroup size="md" style={{ marginTop: "5px" }}>
                       <Input
                         focusBorderColor="green.400"
-                        isInvalid={
-                          errors.confirmPassword && touched.confirmPassword
-                            ? true
-                            : false
-                        }
+                        isInvalid={errors.confirmPassword && touched.confirmPassword ? true : false}
                         id="confirmPassword"
                         type={show ? "text" : "password"}
                         value={values.confirmPassword}
@@ -333,9 +303,7 @@ const SignupUserPage = (props) => {
                     </InputGroup>
                   </FormControl>
                   {errors.confirmPassword && touched.confirmPassword ? (
-                    <p style={{ color: "red", marginBottom: "5px" }}>
-                      {errors.confirmPassword}
-                    </p>
+                    <p style={{ color: "red", marginBottom: "5px" }}>{errors.confirmPassword}</p>
                   ) : (
                     ""
                   )}
@@ -370,9 +338,7 @@ const SignupUserPage = (props) => {
                     margin: "10px 0 20px",
                   }}
                 >
-                  <span style={{ background: "#fff", padding: "0 10px" }}>
-                    OR
-                  </span>
+                  <span style={{ background: "#fff", padding: "0 10px" }}>OR</span>
                 </p>
                 <Button
                   isLoading={googleLoading}

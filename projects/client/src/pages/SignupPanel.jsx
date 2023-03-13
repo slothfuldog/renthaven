@@ -1,5 +1,6 @@
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import "../assets/css/login.css"
+import "../assets/css/login.css";
+import Header from "../components/Header";
 import SignupUserPage from "../components/SignupUser";
 
 const SignupPanelPage = (props) => {

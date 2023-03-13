@@ -2,10 +2,10 @@ import axios from "axios";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing";
 import SignupPanelPage from "./pages/SignupPanel";
 import SigninPanelPage from "./components/SigninPanel";
+import Profile from "./pages/Profile";
 
 function App() {
   // const [message, setMessage] = useState("");
@@ -20,14 +20,15 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
+    <>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignupPanelPage />} />
         <Route path="/signin" element={<SigninPanelPage />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/*" />
       </Routes>
-    </div>
+    </>
   );
 }
 

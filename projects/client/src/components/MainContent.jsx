@@ -18,36 +18,21 @@ function MainContent(props) {
         breakpoints={{
           640: {
             slidesPerView: 2,
-            spaceBetween: 20,
+            spaceBetween: 0,
           },
           768: {
             slidesPerView: 3,
-            spaceBetween: 20,
+            spaceBetween: 10,
           },
           1024: {
             slidesPerView: 4,
-            spaceBetween: 30,
+            spaceBetween: 10,
           },
         }}
         className="main-content"
         navigation={true}
         modules={[Navigation]}
       >
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
-        <SwiperSlide>
-          <PropertyCard />
-        </SwiperSlide>
         <SwiperSlide>
           <PropertyCard />
         </SwiperSlide>

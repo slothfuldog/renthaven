@@ -32,8 +32,7 @@ module.exports = {
       } else {
         if (req.body.provider === "google.com") {
           let length = 21,
-            charset =
-              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
+            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
             randomString = "";
           for (let i = 0, n = charset.length; i < length; ++i) {
             randomString += charset.charAt(Math.floor(Math.random() * n));
@@ -56,8 +55,7 @@ module.exports = {
           });
         } else {
           let length = 21,
-            charset =
-              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
+            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&",
             randomString = "";
           for (let i = 0, n = charset.length; i < length; ++i) {
             randomString += charset.charAt(Math.floor(Math.random() * n));
@@ -107,7 +105,7 @@ module.exports = {
       console.log(error);
       res.status(501).send({
         success: false,
-        message: req.body.name,
+        message: "Database error",
       });
     }
   },
@@ -150,10 +148,7 @@ module.exports = {
             token,
           });
         } else if (req.body.login == "common") {
-          const checkPass = bcrypt.compareSync(
-            req.body.password,
-            data[0].password
-          );
+          const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
           if (checkPass) {
             res.status(200).send({
               success: true,
@@ -306,16 +301,61 @@ module.exports = {
       } else {
         return res.status(400).send({
           success: false,
-          message:
-            "You have reached the maximum number of OTP attempts for today.",
+          message: "You have reached the maximum number of OTP attempts for today.",
         });
       }
     } catch (error) {
       console.log(error);
       return res.status(501).send({
         success: false,
-        message: "An error occured while sending OTP.",
+        message: "An error occurred while sending OTP.",
       });
+    }
+  },
+  changePass: async (req, res) => {
+    try {
+      const { oldPass, password, email } = req.body;
+      const data = await userModel.findAll({
+        where: {
+          email: email,
+        },
+      });
+      if (data[0].provider !== "common") {
+        return res.status(403).send({
+          success: false,
+          message: `We're sorry but you cannot change your password if you login with ${data[0].provider} account`,
+        });
+      }
+
+      const check = bcrypt.compareSync(oldPass, data[0].password);
+      console.log(check);
+
+      if (check != false) {
+        const pass = encryptPassword(password);
+        const update = await userModel.update(
+          { password: pass },
+          {
+            where: {
+              email: email,
+            },
+          }
+        );
+        console.log(`update`, update);
+        if (update) {
+          return res.status(200).send({
+            success: true,
+            message: `Your password has been successfully changed`,
+          });
+        }
+      } else {
+        return res.status(403).send({
+          success: false,
+          message: `Your current password is incorrect`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
     }
   },
 };

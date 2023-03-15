@@ -34,88 +34,16 @@ import {
     const [facebookLoading, setFacebookLoading] = useState(false);
     const { isOpen, onToggle } = useDisclosure();
     const dispatch = useDispatch();
-    const handleLoginGoogle = () => {
-      setGoogleLoading(true);
-      signInWithPopup(auth, provider)
-        .then((data) => {
-          Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-            login: data._tokenResponse.providerId,
-            email: data._tokenResponse.email,
-          }).then((res) => {
-            if (res.data.success == true) {
-              navigate("/", { replace: true });
-              localStorage.setItem("renthaven1", res.data.token);
-              loginAction(res.data.result);
-              window.location.reload();
-              setGoogleLoading(false);
-            } else if (res.data.success == false) {
-              const authenticate = getAuth();
-              const user = authenticate.currentUser;
-              deleteUser(user).then(() => {
-                setAlert(
-                  <p>
-                    The account has not been registered, please register{" "}
-                    <Link className="link" to="/signup">
-                      here
-                    </Link>
-                  </p>
-                );
-                onToggle();
-                setGoogleLoading(false);
-              });
-            }
-            setGoogleLoading(false);
-          });
-        })
-        .catch((e) => {
-          setGoogleLoading(false);
-        });
-    };
-    const handleLoginFacebook = () => {
-      setFacebookLoading(true);
-      signInWithPopup(auth, providerFacebook)
-        .then((data) => {
-          Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
-            login: data._tokenResponse.providerId,
-            email: data._tokenResponse.email,
-          }).then((res) => {
-            if (res.data.success == true) {
-              navigate("/", { replace: true });
-              localStorage.setItem("renthaven1", res.data.token);
-              loginAction(res.data.result);
-              window.location.reload();
-              setFacebookLoading(false);
-            } else if (res.data.success == false) {
-              const authenticate = getAuth();
-              const user = authenticate.currentUser;
-              deleteUser(user).then(() => {
-                setAlert(
-                  <p>
-                    The account has not been registered, please register{" "}
-                    <Link className="link" to="/signup">
-                      here
-                    </Link>
-                  </p>
-                );
-                onToggle();
-                setFacebookLoading(false);
-              });
-            }
-            setFacebookLoading(false);
-          });
-        })
-        .catch((e) => setFacebookLoading(false));
-    };
     const handleEmailLogin = () => {
       setLoginLoading(true);
-      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin", {
+      Axios.post(process.env.REACT_APP_API_BASE_URL + "/signin/tenant", {
         login: "common",
         email: values.email,
         password: values.password,
       })
         .then((res) => {
           if (res.data.success == true) {
-            navigate("/", { replace: true });
+            navigate("/tenant-dashboard", { replace: true });
             localStorage.setItem("renthaven1", res.data.token);
             loginAction(res.data.result);
             window.location.reload();

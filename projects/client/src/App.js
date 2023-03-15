@@ -14,6 +14,9 @@ import Footer from "./components/Footer";
 import VerifyChecker from "./privateRoutes/phoneAndOtpRoute";
 import VerifyPage from "./pages/VerifyPage";
 import { Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import TenantDashboardPage from "./pages/TenantDashboard";
+import { Flexboard, FlexboardProvider, FlexboardFrame, ResizerType, Position } from '@dorbus/flexboard';
 
 function App() {
   const [message, setMessage] = useState("");
@@ -61,13 +64,29 @@ function App() {
   useEffect(() => {
     keepLogin();
     {
+      console.log(window.innerWidth)
       console.log(isVerified, provider, isDeleted, email);
     }
-  }, []);
+  }, [window.innerWidth]);
 
   return (
     <div>
+      
       <Header loading={loading} />
+      
+      {/* <FlexboardProvider>
+            <Flexboard
+            direction={Position.left}
+            draggable={true}
+            width={400}
+            minWidth={50}
+            maxWidth={300}
+            flexboardStyle={{ backgroundColor: "#f2f3f4" }}
+            resizerStyle={{ backgroundColor: "#ccc", width: "2px" }}
+            resizerType={ResizerType.gutterlane}
+            >
+                <div>Flexboard Content</div>
+            </Flexboard> */}
       <Routes>
         <Route
           path="/"
@@ -81,8 +100,10 @@ function App() {
         <Route path="/signin" element={<VerifyChecker loading = {loading}><SigninPanelPage /></VerifyChecker>} />
         <Route path="/profile" element={<VerifyChecker loading = {loading}><Profile /></VerifyChecker>} />
         <Route path="/verify" element={<VerifyChecker loading = {loading}><VerifyPage /></VerifyChecker>} />
+        <Route path="/tenant-dashboard" element={<TenantDashboardPage />} />
         <Route path="/*" />
       </Routes>
+      {/* </FlexboardProvider> */}
       <Footer />
     </div>
   )

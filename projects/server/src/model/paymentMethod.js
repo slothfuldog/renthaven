@@ -3,33 +3,21 @@ const {dbSequelize} = require("../config/db");
 const userModel = require("./userModel");
 const {DataTypes} = Sequelize;
 
-const tenantModel = dbSequelize.define("tenants", {
-    tenanId: {
+const paymentMethodModel = dbSequelize.define("paymentMethods", {
+    bankId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
         autoIncrement: true
     },
-    userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    noKtp: {
+    bankName: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    ktpImg: {
+    bankLogo: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    bankAccountNum: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    bankId: {
-        type: DataTypes.INTEGER,
-        allowNull: true
     }
 })
 
-module.exports = {tenantModel}
+module.exports = {paymentMethodModel}

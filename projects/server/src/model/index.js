@@ -13,6 +13,7 @@ const { specialPriceModel } = require("./specialPriceModel");
 const { roomImageModel } = require("./roomImageModel");
 const { facilityModel } = require("./facilityModel");
 const { propertyFcModel } = require("./propertyFcModel");
+const { paymentMethodModel } = require("./paymentMethod");
 
 userModel.hasMany(tenantModel, {
   foreignKey: "userId",
@@ -157,6 +158,14 @@ propertyFcModel.belongsTo(propertyModel, {
   foreignKey: "propertyId",
 });
 
+paymentMethodModel.hasMany(tenantModel, {
+  foreignKey: "bankId"
+})
+tenantModel.belongsTo(paymentMethodModel, {
+  as: "bank",
+  foreignKey: "bankId"
+})
+
 module.exports = {
   userModel,
   tenantModel,
@@ -173,4 +182,5 @@ module.exports = {
   roomImageModel,
   facilityModel,
   propertyFcModel,
+  paymentMethodModel
 };

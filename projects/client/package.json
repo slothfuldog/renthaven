@@ -11,6 +11,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.5.1",
+    "@dorbus/flexboard": "^1.1.2",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@reduxjs/toolkit": "^1.9.3",
@@ -19,9 +20,9 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "date-fns": "^2.29.3",
-    "framer-motion": "^10.2.2",
     "firebase": "^9.17.2",
     "formik": "^2.2.9",
+    "framer-motion": "^10.2.2",
     "react": "^18.2.0",
     "react-date-range": "^1.4.0",
     "react-dom": "^18.2.0",
@@ -31,6 +32,7 @@
     "react-scripts": "5.0.1",
     "sweetalert2": "^11.7.3",
     "swiper": "^9.1.0",
+    "tesseract.js": "^4.0.2",
     "web-vitals": "^2.1.4",
     "yup": "^1.0.2"
   },

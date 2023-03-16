@@ -14,20 +14,25 @@ import Footer from "./components/Footer";
 import VerifyChecker from "./privateRoutes/phoneAndOtpRoute";
 import VerifyPage from "./pages/VerifyPage";
 import { Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import TenantDashboardPage from "./pages/TenantDashboard";
+import { Flexboard, FlexboardProvider, FlexboardFrame, ResizerType, Position } from '@dorbus/flexboard';
 
 function App() {
   const [message, setMessage] = useState("");
-  const { email, provider, isVerified, isDeleted, check } = useSelector((state) => {
-    return {
-      email: state.userReducer.email,
-      provider: state.userReducer.provider,
-      isVerify: state.userReducer.isVerified,
-      isDeleted: state.userReducer.isDeleted,
-      check: state.userReducer.check,
-    };
-  });
-  const [loading, setLoading] = useState(true);
+
+  const {email, provider, isVerified, isDeleted, check} = useSelector( state => {
+    return{
+    email: state.userReducer.email,
+    provider: state.userReducer.provider,
+    isVerify: state.userReducer.isVerified,
+    isDeleted: state.userReducer.isDeleted,
+    check: state.userReducer.check
+  }})
+  const [loading, setLoading] = useState(true)
+  const currentPath = window.location.pathname;
   const dispatch = useDispatch();
+
   const keepLogin = async () => {
     try {
       let getLocalStorage = localStorage.getItem("renthaven1");
@@ -59,13 +64,29 @@ function App() {
   useEffect(() => {
     keepLogin();
     {
+      console.log(window.innerWidth)
       console.log(isVerified, provider, isDeleted, email);
     }
-  }, []);
+  }, [window.innerWidth]);
 
   return (
     <div>
+      
       <Header loading={loading} />
+      
+      {/* <FlexboardProvider>
+            <Flexboard
+            direction={Position.left}
+            draggable={true}
+            width={400}
+            minWidth={50}
+            maxWidth={300}
+            flexboardStyle={{ backgroundColor: "#f2f3f4" }}
+            resizerStyle={{ backgroundColor: "#ccc", width: "2px" }}
+            resizerType={ResizerType.gutterlane}
+            >
+                <div>Flexboard Content</div>
+            </Flexboard> */}
       <Routes>
         <Route
           path="/"
@@ -75,15 +96,17 @@ function App() {
             </VerifyChecker>
           }
         />
-        <Route path="/signup" element={<SignupPanelPage />} />
-        <Route path="/signin" element={<SigninPanelPage />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/signup" element={<VerifyChecker loading = {loading}><SignupPanelPage /></VerifyChecker>} />
+        <Route path="/signin" element={<VerifyChecker loading = {loading}><SigninPanelPage /></VerifyChecker>} />
+        <Route path="/profile" element={<VerifyChecker loading = {loading}><Profile /></VerifyChecker>} />
+        <Route path="/verify" element={<VerifyChecker loading = {loading}><VerifyPage /></VerifyChecker>} />
+        <Route path="/tenant-dashboard" element={<TenantDashboardPage />} />
         <Route path="/*" />
       </Routes>
+      {/* </FlexboardProvider> */}
       <Footer />
     </div>
-  );
+  )
 }
 
 export default App;

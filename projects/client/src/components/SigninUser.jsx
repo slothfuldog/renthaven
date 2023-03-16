@@ -104,7 +104,7 @@ const SigninUserPage = (props) => {
           setFacebookLoading(false);
         });
       })
-      .catch((e) => setFacebookLoading(false));
+      .catch((e) => {setFacebookLoading(false)});
   };
   const handleEmailLogin = () => {
     setLoginLoading(true);
@@ -123,7 +123,7 @@ const SigninUserPage = (props) => {
         } else if (res.data.success == false) {
           setAlert(
             <p>
-              The account has not been registered, please register{" "}
+              Incorrect password or the account has not been registered, please register{" "}
               <Link className="link" to="/signup">
                 here
               </Link>
@@ -134,8 +134,7 @@ const SigninUserPage = (props) => {
         }
         setLoginLoading(false);
       })
-      .catch((e) => {console.log(e)
-        setLoginLoading(false)});
+      .catch((e) => {setLoginLoading(false)});
   };
   const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
     initialValues: {
@@ -177,7 +176,7 @@ const SigninUserPage = (props) => {
             )}
             <form onSubmit={handleSubmit}>
               <p>
-                Email / Phone <span style={{ color: "red" }}>*</span>
+                Email <span style={{ color: "red" }}>*</span>
               </p>
               <Input
                 isInvalid={errors.email && touched.email ? true : false}

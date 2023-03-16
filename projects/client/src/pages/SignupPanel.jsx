@@ -2,6 +2,8 @@ import { Box, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/r
 import "../styles/login.css";
 import SignupUserPage from "../components/SignupUser";
 import { useEffect, useState } from "react";
+import SignupTenant from "../components/SignupTenant";
+import SignupTenantPage from "../components/SignupTenant";
 
 const SignupPanelPage = (props) => {
   const [backgrounds, setBackground] = useState([
@@ -25,41 +27,37 @@ const SignupPanelPage = (props) => {
       backgroundSize="cover"
     >
       <Flex>
-        <Box
-          className="mobile"
-          rounded={{ base: "none", md: "md" }}
-          style={{ background: "white" }}
-        >
-          <p
-            style={{
-              fontSize: "28px",
-              fontWeight: "600",
-              textAlign: "center",
-              paddingTop: "20px",
-              marginBottom: "20px",
-            }}
-          >
-            Sign Up
-          </p>
-          <Tabs variant="enclosed" isFitted>
-            <TabList>
-              <Tab fontWeight="semibold" _selected={{ color: "green" }}>
-                Signup as user
-              </Tab>
-              <Tab fontWeight="semibold" _selected={{ color: "green" }}>
-                Signup as tenant
-              </Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                <SignupUserPage />
-              </TabPanel>
-              <TabPanel>
-                <p>two!</p>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
+        <Box className="mobile" rounded={{base: "none", md:"md"}} style={{background: "white"}}>
+      <p
+        style={{
+          fontSize: "28px",
+          fontWeight: "600",
+          textAlign: "center",
+          paddingTop: "20px",
+          marginBottom: "20px",
+        }}
+      >
+        Sign Up
+      </p>
+      <Tabs variant="enclosed" isFitted>
+        <TabList>
+          <Tab fontWeight="semibold" _selected={{ color: "green" }}>
+            Signup as user
+          </Tab>
+          <Tab fontWeight="semibold" _selected={{ color: "green" }}>
+            Signup as tenant
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <SignupUserPage />
+          </TabPanel>
+          <TabPanel>
+            <SignupTenantPage />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+      </Box>
       </Flex>
     </Box>
   );

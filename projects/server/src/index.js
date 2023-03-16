@@ -6,6 +6,7 @@ const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
+app.use(express.static('src/public'))
 app.use(cors());
 app.use(bearer());
 app.use(
@@ -23,10 +24,11 @@ app.use(express.json());
 
 // ===========================
 // NOTE : Add your routes here
-const { userRouter, categoryRouter } = require("./router");
+const { userRouter, categoryRouter, tenantRouter } = require("./router");
 const { dbSequelize, dbCheckConnection } = require("./config/db");
 app.use("/api", userRouter);
 app.use("/api", categoryRouter);
+app.use("/api", tenantRouter);
 
 // ===========================
 
@@ -70,5 +72,4 @@ app.listen(PORT, (err) => {
   }
 });
 
-// dbSequelize.sync();
 dbCheckConnection();

@@ -275,7 +275,6 @@ module.exports = {
             <h3>Here's your OTP. Please login and input your OTP</h2>
             <h3>${otp}</h3>
             <a href="http://localhost:3000/verify"><p>Please click here to verify your OTP</p></a>
-
           </div>`,
           },
           (error, info) => {

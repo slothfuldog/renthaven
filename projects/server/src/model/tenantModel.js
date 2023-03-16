@@ -22,6 +22,14 @@ const tenantModel = dbSequelize.define("tenants", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  bankAccountNum: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  bankId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 });
 
 module.exports = { tenantModel };

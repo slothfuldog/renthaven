@@ -1,10 +1,10 @@
 import React from "react";
 import { Flex, Container, Heading } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper";
+import { Pagination } from "swiper";
 import PropertyCard from "./PropertyCard";
 import "swiper/css";
-import "swiper/css/navigation";
+import "swiper/css/pagination";
 import "../styles/swiperKita.css";
 
 function MainContent(props) {
@@ -30,8 +30,8 @@ function MainContent(props) {
           },
         }}
         className="main-content"
-        navigation={true}
-        modules={[Navigation]}
+        pagination={{ clickable: true, horizontalClass: "pagination-kita" }}
+        modules={[Pagination]}
       >
         <SwiperSlide>
           <PropertyCard />

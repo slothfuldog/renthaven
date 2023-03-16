@@ -10,7 +10,7 @@ function Landing(props) {
   return (
     <Box>
       {/* banner */}
-      <Flex py={{ base: 0, lg: 3 }} direction="row" justify="center" bg="green.700">
+      <Flex direction="row" justify="center">
         <LandingBanner />
       </Flex>
       <LandingSearchForm />

@@ -76,24 +76,18 @@ function EditUserNameBtn(props) {
     }
   };
 
-  const resetField = () => {
-    onClose();
-    setFieldValue("name", "");
-  };
-
   //Formik configuration
-  const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
-    useFormik({
-      initialValues: {
-        name: "",
-      },
-      validationSchema: profileSchema,
-      onSubmit: onBtnUpdate,
-    });
+  const formEmail = useFormik({
+    initialValues: {
+      name: "" || props.name,
+    },
+    validationSchema: profileSchema,
+    enableReinitialize: true,
+    onSubmit: onBtnUpdate,
+  });
 
-  useEffect(() => {
-    setFieldValue("name", props.name);
-  }, []);
+  const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit } =
+    formEmail;
 
   return (
     <>
@@ -101,7 +95,7 @@ function EditUserNameBtn(props) {
         Edit
       </Button>
 
-      <Modal onClose={resetField} isOpen={isOpen} isCentered>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Change Name</ModalHeader>
@@ -125,7 +119,7 @@ function EditUserNameBtn(props) {
             </form>
           </ModalBody>
           <ModalFooter gap={4}>
-            <Button variant="link" onClick={resetField}>
+            <Button variant="link" onClick={onClose}>
               Close
             </Button>
             <Button

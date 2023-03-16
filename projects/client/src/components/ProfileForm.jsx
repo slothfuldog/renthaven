@@ -15,13 +15,14 @@ import EditUserEmailBtn from "./EditUserEmailBtn";
 function ProfileForm(props) {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { email, name, gender, dob, provider } = useSelector((state) => {
+  const { email, name, gender, dob, provider, role } = useSelector((state) => {
     return {
       email: state.userReducer.email,
       name: state.userReducer.name,
       gender: state.userReducer.gender,
       dob: state.userReducer.dob,
       provider: state.userReducer.provider,
+      role: state.userReducer.role,
     };
   });
 
@@ -137,6 +138,33 @@ function ProfileForm(props) {
           {provider !== "common" ? null : <EditUserEmailBtn email={email} />}
         </Flex>
       </Flex>
+
+      {role !== "user" ? (
+        <>
+          <Divider mt="3" mb="2" />
+          <Heading mb={3} size="md">
+            Bank Information
+          </Heading>
+          <Flex direction="column" gap={8}>
+            <Flex direction="row" gap={4}>
+              <Text minW="35%">Bank Name</Text>
+              <Text>{name}</Text>
+            </Flex>
+            <Flex direction="row" gap={4}>
+              <Text minW="35%">Account Number</Text>
+              <Text>
+                {dob === null
+                  ? `not set yet`
+                  : new Date(dob).toLocaleDateString("id", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+              </Text>
+            </Flex>
+          </Flex>
+        </>
+      ) : null}
 
       {provider === "common" ? (
         <form onSubmit={handleSubmit}>

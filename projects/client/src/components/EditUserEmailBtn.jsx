@@ -132,12 +132,14 @@ function EditUserEmailBtn(props) {
   };
 
   const onBtnUpdate = async () => {
+    setLoading(true);
     const response = await Axios.patch(process.env.REACT_APP_API_BASE_URL + "/user", {
       email: email,
       newEmail: values.newEmail,
     });
     if (response.data.success) {
       onClose();
+      setLoading(false);
       Swal.fire({
         icon: "success",
         title: response.data.message,

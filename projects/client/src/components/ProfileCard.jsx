@@ -147,6 +147,7 @@ function ProfileCard(props) {
                       name="image"
                       onChange={(e) => setFieldValue("image", e.target.files[0])}
                       onBlur={handleBlur}
+                      accept=".png,.jpg,.gif"
                     />
                     <FormErrorMessage fontSize="sm">{errors.image}</FormErrorMessage>
                     <FormHelperText mt={6}>

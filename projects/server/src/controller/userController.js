@@ -409,10 +409,9 @@ module.exports = {
       );
 
       console.log(update);
-      const message =
-        newEmail || newEmail != ""
-          ? `Data Updated Successfully, Please re-login to your account`
-          : `Data Updated Successfully`;
+      const message = newEmail
+        ? `Data Updated Successfully, Please re-login to your account`
+        : `Data Updated Successfully`;
       if (update) {
         return res.status(200).send({
           success: true,

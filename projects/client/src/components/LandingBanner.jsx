@@ -1,7 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper";
-import { Container, Flex, Image } from "@chakra-ui/react";
+import { Container, Flex, Image, Skeleton } from "@chakra-ui/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "../styles/swiperKita.css";
@@ -13,7 +13,7 @@ import banner4 from "../assets/landingBanner/banner-4.jpg";
 function LandingBanner(props) {
   const [banner, setBanner] = React.useState([banner1, banner2, banner3, banner4]);
   return (
-    <Container px={{ base: 0, lg: "16px" }} maxW={{ base: "container", md: "container.xl" }}>
+    <Container px={0} maxW={{ base: "container", md: "100%" }}>
       <Swiper
         navigation={false}
         spaceBetween={0}
@@ -30,14 +30,16 @@ function LandingBanner(props) {
         {banner.map((banner, idx) => {
           return (
             <SwiperSlide key={idx}>
-              <Image
-                height="388px"
-                width="1248px"
-                src={banner}
-                objectFit="cover"
-                fallbackSrc="https://via.placeholder.com/500"
-                alt="Landing Banner"
-              />
+              <Skeleton isLoaded>
+                <Image
+                  height="450px"
+                  width="100%"
+                  src={banner}
+                  objectFit="cover"
+                  fallbackSrc="https://via.placeholder.com/500"
+                  alt="Landing Banner"
+                />
+              </Skeleton>
             </SwiperSlide>
           );
         })}

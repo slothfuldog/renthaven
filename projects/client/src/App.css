@@ -46,19 +46,3 @@
   border-radius: 2%;
   z-index: 999;
 }
-
-.file-upload {
-  border: 1px solid #2f855a;
-  display: inline-block;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.file-upload:hover {
-  background: #f0fff4;
-}
-
-.input-file-upload {
-  display: none;
-}

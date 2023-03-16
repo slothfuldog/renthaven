@@ -358,4 +358,162 @@ module.exports = {
       res.status(500).send(error);
     }
   },
+  changeImgProfile: async (req, res) => {
+    try {
+      console.log(req.files);
+      // yang disimpan ke database: /imgProfile/filename
+      const pathName = req.files[0].destination.split(`/`);
+      const profileImg = `/${pathName[pathName.length - 1]}/${req.files[0].filename}`;
+
+      const update = await userModel.update(
+        {
+          profileImg,
+        },
+        {
+          where: { userId: req.decrypt.userId },
+        }
+      );
+
+      if (update) {
+        return res.status(200).send({
+          success: true,
+          message: `Profile Picture Updated Successfully`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: error,
+      });
+    }
+  },
+  update: async (req, res) => {
+    try {
+      const { email, name, gender, dob, newEmail } = req.body;
+
+      const data = await userModel.findAll({ where: { email } });
+
+      const nameField = name || name != "" ? name : data[0].name;
+      const genderField = gender || gender != "" ? gender : data[0].gender;
+      const dobField = dob || dob != "" ? dob : data[0].dob;
+      const emailField = newEmail || newEmail != "" ? newEmail : data[0].email;
+
+      console.log(`name`, nameField);
+      console.log(`gender`, genderField);
+      console.log(`dob`, dobField);
+      console.log(`email`, emailField);
+
+      let update = await userModel.update(
+        { name: nameField, gender: genderField, dob: dobField, email: emailField },
+        { where: { email } }
+      );
+
+      console.log(update);
+      const message =
+        newEmail || newEmail != ""
+          ? `Data Updated Successfully, Please re-login to your account`
+          : `Data Updated Successfully`;
+      if (update) {
+        return res.status(200).send({
+          success: true,
+          message: message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  sendOtpOldEmail: async (req, res) => {
+    try {
+      const { email, newEmail } = req.body;
+      let user = await userModel.findAll({ where: { email } });
+
+      if (user.length > 0) {
+        let otp = generateOTP();
+
+        let userEmail = newEmail ? newEmail : user[0].email;
+        let subject = newEmail ? "New Email Verification" : "Change Email Verification";
+        let html = newEmail
+          ? `<div>
+            <h5>Here's your code. Please input your code to verify your new email</h5>
+            <h3>CODE: ${otp}</h3>
+          </div>`
+          : `<div>
+        <h5>Here's your code. Please input your code to change your email</h5>
+        <h3>CODE: ${otp}</h3>
+      </div>`;
+
+        transport.sendMail(
+          {
+            from: "Renthaven Admin",
+            to: userEmail,
+            subject: subject,
+            html: html,
+          },
+          (error, info) => {
+            if (error) {
+              return res.status(500).send(error);
+            }
+          }
+        );
+
+        let userUpdate = await userModel.update(
+          {
+            otp,
+          },
+          { where: { email: user[0].email } }
+        );
+
+        if (userUpdate) {
+          return res.status(200).send({
+            success: true,
+            message: "OTP has been sent",
+          });
+        }
+      } else {
+        return res.status(500).send({
+          success: false,
+          message: `Oops theres something wrong`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(501).send({
+        success: false,
+        message: "An error occurred while sending OTP.",
+      });
+    }
+  },
+  verifyOtpOldEmail: async (req, res) => {
+    try {
+      const { email, otp } = req.body;
+      let user = await userModel.findAll({ where: { email } });
+      if (user.length > 0) {
+        if (otp === user[0].otp) {
+          return res.status(200).send({
+            success: true,
+            message: "OTP is verified",
+          });
+        } else {
+          return res.status(400).send({
+            success: false,
+            message: "Incorrect code, please try again",
+          });
+        }
+      } else {
+        return res.status(500).send({
+          success: false,
+          message: `Oops theres something wrong`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: "An error occurred while sending OTP.",
+      });
+    }
+  },
 };

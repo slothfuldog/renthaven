@@ -10,7 +10,7 @@ import "../styles/swiperKita.css";
 function MainContent(props) {
   return (
     <Container maxW={{ base: "container.lg", md: "container.xl", lg: "container.xl" }}>
-      <Heading mb="6">Reccomended places for you</Heading>
+      <Heading mb="6">Recommended places for you</Heading>
       <Swiper
         slidesPerView={1}
         spaceBetween={10}

@@ -1,5 +1,6 @@
 import React from "react";
-import { Avatar, Box, Text, Stack, Button } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, Box, Text, Stack, Button, Image, Flex } from "@chakra-ui/react";
 import { FormHelperText, Input, FormErrorMessage, FormControl } from "@chakra-ui/react";
 import {
   Modal,
@@ -13,12 +14,69 @@ import {
 import { useDisclosure } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { profilePictureSchema } from "../schemas/profilePictureVal";
+import Axios from "axios";
+import Swal from "sweetalert2";
+import { loginAction } from "../actions/userAction";
+import fallBackAvatar from "../assets/fallback-avatar.jpg";
 
 function ProfileCard(props) {
   const [isLoading, setIsLoading] = React.useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const onBtnUpdate = () => {
+  const dispatch = useDispatch();
+
+  const { profileImg } = useSelector((state) => {
+    return {
+      profileImg: state.userReducer.profileImg,
+    };
+  });
+
+  const onBtnUpdate = async () => {
     console.log(values.image);
+    try {
+      let token = localStorage.getItem("renthaven1");
+      const formData = new FormData();
+      formData.append("images", values.image);
+      const response = await Axios.patch(
+        process.env.REACT_APP_API_BASE_URL + "/profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        onClose();
+        Swal.fire({
+          icon: "info",
+          title: response.data.message,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#48BB78",
+        }).then(async () => {
+          try {
+            let getLocalStorage = localStorage.getItem("renthaven1");
+            if (getLocalStorage) {
+              let res = await Axios.post(
+                process.env.REACT_APP_API_BASE_URL + `/signin/keep-login`,
+                {},
+                {
+                  headers: {
+                    Authorization: `Bearer ${getLocalStorage}`,
+                  },
+                }
+              );
+              dispatch(loginAction(res.data.result));
+              localStorage.setItem("renthaven1", res.data.token);
+              setFieldValue("image", undefined);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //Formik configuration
@@ -31,7 +89,7 @@ function ProfileCard(props) {
   });
   return (
     <Box py={6}>
-      <Box
+      <Flex
         maxW={"320px"}
         w={"full"}
         bg="white"
@@ -41,14 +99,18 @@ function ProfileCard(props) {
         textAlign={"center"}
         border="1px"
         borderColor="blackAlpha.100"
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
       >
-        <Avatar
-          size={"4xl"}
-          src={
-            "https://images.unsplash.com/photo-1520810627419-35e362c5dc07?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-          }
-          alt={"Avatar Alt"}
-          pos={"relative"}
+        <Image
+          borderRadius="full"
+          border="1px"
+          borderColor="#ccc"
+          boxSize="200px"
+          src={`http://localhost:8000/${profileImg}`}
+          alt={"User Avatar"}
+          fallbackSrc={fallBackAvatar}
         />
 
         <Stack mt={8} direction={"column"} spacing={3}>
@@ -69,14 +131,17 @@ function ProfileCard(props) {
                       _hover={{
                         cursor: "pointer",
                       }}
+                      p="0"
                       sx={{
                         "::file-selector-button": {
                           height: 10,
-                          padding: 0,
+                          padding: 2,
                           mr: 4,
-                          background: "none",
                           border: "none",
-                          fontWeight: "bold",
+                          background: "gray.100",
+                          fontSize: "md",
+                          fontFamily: "Inter, sans-serif",
+                          color: "gray.700",
                         },
                       }}
                       name="image"
@@ -92,10 +157,14 @@ function ProfileCard(props) {
                 </form>
               </ModalBody>
               <ModalFooter gap={4}>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button variant="link" onClick={onClose}>
+                  Cancel
+                </Button>
                 <Button
                   isLoading={isLoading}
-                  isDisabled={errors.image && touched.image ? true : false}
+                  isDisabled={
+                    (errors.image && touched.image) || values.image === undefined ? true : false
+                  }
                   type="submit"
                   onClick={onBtnUpdate}
                   colorScheme="green"
@@ -106,7 +175,7 @@ function ProfileCard(props) {
             </ModalContent>
           </Modal>
         </Stack>
-      </Box>
+      </Flex>
     </Box>
   );
 }

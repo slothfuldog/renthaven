@@ -40,7 +40,7 @@ module.exports = {
     return multer({
       storage: storageUploader,
       fileFilter: (req, file, cb) => {
-        const extFilter = /\.(jpg|png|webp|doc|pdf)/;
+        const extFilter = /\.(jpg|gif|jpeg|png)/;
         let check = file.originalname.toLocaleLowerCase().match(extFilter);
         if (check) {
           cb(null, true);

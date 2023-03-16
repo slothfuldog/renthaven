@@ -10,14 +10,12 @@ app.use(cors());
 app.use(bearer());
 app.use(
   cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
+    origin: [process.env.WHITELISTED_DOMAIN && process.env.WHITELISTED_DOMAIN.split(",")],
   })
 );
 
 app.use(express.json());
+app.use(express.static("src/public"));
 
 //#region API ROUTES
 

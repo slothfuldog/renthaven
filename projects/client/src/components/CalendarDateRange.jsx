@@ -8,6 +8,8 @@ import "react-date-range/dist/theme/default.css";
 
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
+import { useDispatch } from "react-redux";
+import { setDateAction } from "../actions/dateAction";
 
 function CalendarDateRange() {
   //state untuk menyimpan date
@@ -24,6 +26,7 @@ function CalendarDateRange() {
 
   // elemen untuk di toggle
   const refOne = useRef(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // event listener untuk mengecek keydown dan click
@@ -45,6 +48,18 @@ function CalendarDateRange() {
     }
   };
 
+  const handleChange = (item) => {
+    console.log(`start:`, format(item.selection.startDate, "mm/dd/yyyy"));
+    console.log(`end:`, format(item.selection.endDate, "mm/dd/yyyy"));
+    setCalendar([item.selection]);
+    dispatch(
+      setDateAction({
+        startDate: format(item.selection.startDate, "mm/dd/yyyy"),
+        endDate: format(item.selection.endDate, "mm/dd/yyyy"),
+      })
+    );
+  };
+
   return (
     <div className="calendarWrap">
       <InputGroup>
@@ -61,7 +76,7 @@ function CalendarDateRange() {
       <div ref={refOne}>
         {open && (
           <DateRange
-            onChange={(item) => setCalendar([item.selection])}
+            onChange={(item) => handleChange(item)}
             editableDateInputs={true}
             moveRangeOnFirstSelection={false}
             ranges={calendar}

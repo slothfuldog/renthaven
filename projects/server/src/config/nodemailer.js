@@ -6,6 +6,10 @@ const transport = nodemailer.createTransport({
     user: "purwadhikarenthaven@gmail.com",
     pass: "jwazrbgdaorepmwq",
   },
+  tls: {
+    // do not fail on invalid certs
+    rejectUnauthorized: false,
+  },
 });
 
 module.exports = {

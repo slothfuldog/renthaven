@@ -1,6 +1,4 @@
 import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import LandingSearchForm from "../components/LandingSearchForm";
 import LandingContent from "../components/LandingContent";
 import { Box, Image, Flex, Divider } from "@chakra-ui/react";
@@ -8,7 +6,7 @@ import Testimonials from "../components/Testimonials";
 import MainContent from "../components/MainContent";
 import LandingBanner from "../components/LandingBanner";
 
-function Landing() {
+function Landing(props) {
   return (
     <Box>
       {/* banner */}

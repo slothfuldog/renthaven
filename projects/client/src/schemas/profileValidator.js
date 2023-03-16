@@ -4,7 +4,8 @@ const passwordRules = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@
 //password must contains 8 chars, one uppercase, one lowercase, one number and one special characters
 
 export const profileSchema = yup.object().shape({
-  email: yup.string().email("Please enter a valid email").required("Required"),
+  name: yup.string().min(3),
+  newEmail: yup.string().email("Please enter a valid email").required("Required"),
   oldPass: yup.string().required("Required"),
   password: yup
     .string()

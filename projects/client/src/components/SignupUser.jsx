@@ -99,6 +99,13 @@ const SignupUserPage = (props) => {
         setGoogleLoading(false);
       });
   };
+  const onInputChange = e => {
+    const { value } = e.target;
+    const re = /^[A-Za-z]+$/;
+    if (value === "" || re.test(value)) {
+      handleChange(e)
+    }
+  }
   const handleSignupFacebook = () => {
     setFacebookLoading(true);
     signInWithPopup(auth, providerFacebook)
@@ -254,7 +261,7 @@ const SignupUserPage = (props) => {
                   id="name"
                   style={{ marginTop: "5px" }}
                   value={values.name}
-                  onChange={handleChange}
+                  onChange={onInputChange}
                   onBlur={handleBlur}
                 />
               </FormControl>

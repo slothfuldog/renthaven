@@ -43,7 +43,7 @@ const NavLink = ({ children }) => (
   </Link>
 );
 
-function Header(props) {
+function TenantHeader(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -51,19 +51,21 @@ function Header(props) {
     return {
       email: state.userReducer.email,
       name: state.userReducer.name,
-      role: state.userReducer.role,
+      role: state.userReducer.role
     };
   });
   const logoutHandler = () => {
     dispatch(logoutAction());
     localStorage.removeItem("renthaven1");
-    navigate("/signin", { replace: true });
     window.location.reload();
+    navigate("/signin", { replace: true });
+    
   };
   useEffect(() => {}, [email]);
   return (
-    <Box shadow="sm">
-      <Container maxW={"container.lg"}>
+    //CLONE CODE DANIEL
+    <Box w="100%" shadow="sm" backgroundColor = "white" zIndex={1} position= {props.isMobile ? "unset" : "fixed"}>
+      <Container  maxW={role === "tenant" ? "100%" : "container.lg"}>
         <Box px={4}>
           <Flex h={16} alignItems={"center"} justifyContent="space-between">
             <HStack spacing={8} alignItems={"center"}>
@@ -71,7 +73,7 @@ function Header(props) {
                 _hover={{
                   cursor: "pointer",
                 }}
-                onClick={() => navigate("/", { replace: true })}
+                onClick={() => navigate("/tenant-dashboard", { replace: true })}
               >
                 <Image boxSize="70px" src={logo} />
                 <Heading size="md">Renthaven</Heading>
@@ -113,18 +115,17 @@ function Header(props) {
                     <MenuItem onClick={() => navigate("/profile", { replace: true })}>
                       My Profile
                     </MenuItem>
-                    <MenuItem>My Orders</MenuItem>
                     <MenuDivider />
                     <MenuItem onClick={logoutHandler}>Logout</MenuItem>
                   </MenuList>
                 </Menu>{" "}
                 <IconButton
-                  size={"md"}
-                  icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-                  aria-label={"Open Menu"}
-                  display={{ md: "none" }}
-                  onClick={isOpen ? onClose : onOpen}
-                />
+                    size={"md"}
+                    icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+                    aria-label={"Open Menu"}
+                    display={{ md: "none" }}
+                    onClick={isOpen ? onClose : onOpen}
+                  />
               </Flex>
             ) : (
               <>
@@ -224,4 +225,4 @@ function Header(props) {
   );
 }
 
-export default Header;
+export default TenantHeader;

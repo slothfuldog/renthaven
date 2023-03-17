@@ -26,6 +26,9 @@ const VerifyChecker = (props) => {
                 }
                 return(<Navigate to="/" />)
             }
+            else if(role != "tenant" && currentPath == "/tenant-dashboard"){
+                return(<Navigate to="/" />)
+            }
             if(role == "tenant" && (currentPath == "/")){
                 return(<Navigate to= "/tenant-dashboard" />)
             }

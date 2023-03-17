@@ -4,6 +4,20 @@
     text-decoration: underline;
 }
 
+.menu-list{
+    color: #48BB78;
+    -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none;
+    transition: all ease-in-out 0.25s;
+}
+.menu-list:hover{
+    background-color: #F0FFF4;
+    cursor: pointer;
+}
+.menu-list:active{
+    background-color: #C6F6D5;
+}
 @media only screen and (min-width: 0px){
     .mobile{
         height: auto;

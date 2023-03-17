@@ -23,7 +23,6 @@ module.exports = {
           email: req.body.email,
         },
       });
-
       if (data.length > 0) {
         res.status(200).send({
           success: false,
@@ -140,14 +139,14 @@ module.exports = {
         ...data,
       });
       if (data.length > 0) {
-        if (req.body.login != "common") {
+        if (req.body.login != "common" && data[0].role == "user") {
           res.status(200).send({
             success: true,
             message: "Login successfull",
             result: data[0],
             token,
           });
-        } else if (req.body.login == "common") {
+        } else if (req.body.login == "common" && data[0].role == "user") {
           const checkPass = bcrypt.compareSync(req.body.password, data[0].password);
           if (checkPass) {
             res.status(200).send({
@@ -157,15 +156,15 @@ module.exports = {
               token,
             });
           } else {
-            res.status(200).send({
+            res.status(401).send({
               success: false,
               message: "Username or password invalid",
             });
           }
-        } else {
-          res.status(200).send({
+        } else if(data[0].role === "tenant") {
+          res.status(401).send({
             success: false,
-            message: "Username or password invalid",
+            message: "The account is registered as a tenant, please use another account",
           });
         }
       } else {

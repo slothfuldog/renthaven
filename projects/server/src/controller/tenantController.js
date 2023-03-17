@@ -106,8 +106,8 @@ module.exports = {
           ...data,
         });
         if (data.length > 0) {
-          if(data.role == "user"){
-            return res.status(401).send({
+          if(data[0].role === "user"){
+            return res.status(403).send({
               success: false,
               message: "The account is not a tenant, please login by using your tenant account"
             })

@@ -4,7 +4,7 @@ const userModel = require("./userModel");
 const {DataTypes} = Sequelize;
 
 const tenantModel = dbSequelize.define("tenants", {
-    tenanId: {
+    tenantId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,

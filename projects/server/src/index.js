@@ -71,5 +71,5 @@ app.listen(PORT, (err) => {
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });
-
+// dbSequelize.sync();
 dbCheckConnection();

@@ -134,7 +134,9 @@ const SigninUserPage = (props) => {
         }
         setLoginLoading(false);
       })
-      .catch((e) => {setLoginLoading(false)});
+      .catch((e) => {
+        setAlert(`${e.response.data.message}`)
+        setLoginLoading(false)});
   };
   const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
     initialValues: {
@@ -165,14 +167,12 @@ const SigninUserPage = (props) => {
             }}
           >
             {alerts == "" ? (
-              <ScaleFade in={isOpen} />
+              ""
             ) : (
-              <ScaleFade in={isOpen}>
                 <Alert status="error" style={{ marginBottom: "20px" }}>
                   <AlertIcon />
                   {alerts}
                 </Alert>
-              </ScaleFade>
             )}
             <form onSubmit={handleSubmit}>
               <p>
@@ -181,6 +181,7 @@ const SigninUserPage = (props) => {
               <Input
                 isInvalid={errors.email && touched.email ? true : false}
                 id="email"
+                onKeyPress={event => (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122)}
                 value={values.email}
                 style={{ marginTop: "5px" }}
                 onChange={handleChange}

@@ -7,7 +7,7 @@ export const profilePictureSchema = yup.object().shape({
   image: yup
     .mixed()
     .required("A file is required")
-    .test("fileSize", "File is too large", (value) => value && value.size < FILE_SIZE)
+    .test("fileSize", "File size is too large", (value) => value && value.size < FILE_SIZE)
     .test(
       "fileFormat",
       "File extension is not supported",

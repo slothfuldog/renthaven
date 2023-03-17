@@ -1,35 +1,35 @@
-const {Sequelize} = require("sequelize");
-const {dbSequelize} = require("../config/db");
+const { Sequelize } = require("sequelize");
+const { dbSequelize } = require("../config/db");
 const userModel = require("./userModel");
-const {DataTypes} = Sequelize;
+const { DataTypes } = Sequelize;
 
 const tenantModel = dbSequelize.define("tenants", {
-    tenanId: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        allowNull: false,
-        autoIncrement: true
-    },
-    userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    noKtp: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    ktpImg: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    bankAccountNum: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    bankId: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    }
-})
+  tenantId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+    autoIncrement: true,
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  noKtp: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  ktpImg: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  bankAccountNum: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  bankId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+});
 
-module.exports = {tenantModel}
+module.exports = { tenantModel };

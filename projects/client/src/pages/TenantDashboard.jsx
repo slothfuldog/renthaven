@@ -1,30 +1,151 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { faker } from "@faker-js/faker";
+const {
+  Box,
+  Input,
+  Container,
+  Text,
+  Flex,
+  Table,
+  Thead,
+  Th,
+  TableContainer,
+  Tbody,
+  Tr,
+  Td,
+  Button,
+  Link,
+  textDecoration,
+  TableCaption,
+  useMediaQuery,
+  Divider,
+} = require("@chakra-ui/react");
 
-const { Box, Input, Container, Text } = require("@chakra-ui/react")
+const TenantDashboardPage = ({ isMobile }) => {
+  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+    },
 
-const TenantDashboardPage = ({isMobile}) =>{
-    const [txt, setTxt] = useState('');
- 
-    const onInputChange = e => {
-      const { value } = e.target;
-      console.log('Input value: ', value);
-      const re = /^[A-Za-z]+$/;
-      if (value === "" || re.test(value)) {
-        setTxt(value);
-      }
-    }
-    useEffect(() =>{
-      document.title = "Renthaven || Tenant Dashboard"
-    }, [])
-    return (
-      <Box w="100%" display={"flex"} flexDirection={"column"}>
-        <Box shadow="md"  style={{margin: isMobile ? "-64px 0 0" : "30px 80px 50px 80px"}}>
-          <Box m="10px">
-          <Text >Put summary here</Text>
+    maintainAspectRatio: false,
+  };
+  const labels = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Income",
+        data: labels.map(() => faker.datatype.number({ min: -10000000, max: 100000000 })),
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
+  useEffect(() => {
+    document.title = "Renthaven || Tenant Dashboard";
+  }, []);
+  return (
+    <Box w="100%" display={"flex"} flexDirection={"column"}>
+      <Box shadow="md" style={{ margin: isMobile ? "-44px 0 0" : "15px 80px 50px 80px" }}>
+        <Flex m="10px" direction="column">
+          <Box shadow={"sm"}>
+            <Text fontWeight="600" textAlign="center">
+              BOOKING REQUEST
+            </Text>
+            <TableContainer maxW="100%">
+              <Table variant="striped">
+                <TableCaption>
+                  <Link>See more...</Link>
+                </TableCaption>
+                <Thead>
+                  <Th textAlign="center">NO.</Th>
+                  <Th textAlign="center">BOOKING ID</Th>
+                  <Th textAlign="center">GUEST NAME</Th>
+                  <Th textAlign="center">TYPE</Th>
+                  <Th textAlign="center">PAYMENT PROOF</Th>
+                  <Th textAlign="center">STATUS</Th>
+                </Thead>
+                <Tbody>
+                  <Tr>
+                    <Td textAlign="center">1</Td>
+                    <Td textAlign="center">
+                      <Link _hover={{ color: "blue", textDecoration: "none" }}>54425890</Link>
+                    </Td>
+                    <Td textAlign="center">Adriano Calisto</Td>
+                    <Td textAlign="center">Suite Room</Td>
+                    <Td textAlign="center">No proof yet.</Td>
+                    <Td textAlign="center">Processing</Td>
+                  </Tr>
+                  <Tr>
+                    <Td textAlign="center">2</Td>
+                    <Td textAlign="center">
+                      <Link _hover={{ color: "blue", textDecoration: "none" }}>54425945</Link>
+                    </Td>
+                    <Td textAlign="center">Cecillia Dhila</Td>
+                    <Td textAlign="center">Twin Bed Room</Td>
+                    <Td textAlign="center">
+                      <Link _hover={{ color: "blue", textDecoration: "none" }}>PROOF UPLOADED</Link>
+                    </Td>
+                    <Td textAlign="center">Processing</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
           </Box>
-        </Box>
-      </Box>)
-}
+          <Flex mt={2} direction={isMobile ? "column" : "row"}>
+            <Box w={isMobile ? "100%" : "50%"}>
+              <Flex justifyContent={"center"}>
+                <Text fontWeight="600">WEEKLY REPORT</Text>{" "}
+              </Flex>
+              <Box>
+                <Line options={options} data={data} height="200px" />
+              </Box>
+            </Box>
+            <Divider orientation="vertical" />
+            <Box w={isMobile ? "100%" : "50%"}>
+              <Text fontWeight="600" display={"flex"} justifyContent={"center"}>
+                YOUR PROPERTIES
+              </Text>
+              <TableContainer maxW="100%">
+                <Table variant="striped">
+                  <TableCaption>
+                    <Link>See more...</Link>
+                  </TableCaption>
+                  <Thead>
+                    <Th textAlign="center">NO.</Th>
+                    <Th textAlign="center">PROPERTIES NAME</Th>
+                    <Th textAlign="center">STATUS</Th>
+                  </Thead>
+                  <Tbody>
+                    <Tr>
+                      <Td textAlign="center">1</Td>
+                      <Td textAlign="center">Grandprix Hotel</Td>
+                      <Td textAlign="center">Active</Td>
+                    </Tr>
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Flex>
+        </Flex>
+      </Box>
+    </Box>
+  );
+};
 
 export default TenantDashboardPage;

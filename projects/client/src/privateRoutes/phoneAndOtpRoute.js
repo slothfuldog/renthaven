@@ -34,7 +34,7 @@ const VerifyChecker = (props) => {
             }
                 return props.children
             }
-        else if(currentPath == "/profile" || currentPath == "/verify"){
+        else if(currentPath == "/profile" || currentPath == "/verify" || currentPath == "/tenant-dashboard"){
             return (<Navigate to ="/" />)
         }else{
             return props.children

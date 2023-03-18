@@ -1,7 +1,14 @@
-const { encryptPassword, createToken } = require("../config/encrypt");
-const { userModel } = require("../model");
+const {
+  encryptPassword,
+  createToken
+} = require("../config/encrypt");
+const {
+  userModel
+} = require("../model");
 const bcrypt = require("bcrypt");
-const { transport } = require("../config/nodemailer");
+const {
+  transport
+} = require("../config/nodemailer");
 
 function generateOTP() {
   let length = 4,
@@ -38,9 +45,9 @@ module.exports = {
           }
 
           const encryptedPassword =
-            req.body.provider !== "common"
-              ? encryptPassword(randomString)
-              : encryptPassword(req.body.password);
+            req.body.provider !== "common" ?
+            encryptPassword(randomString) :
+            encryptPassword(req.body.password);
           let data1 = await userModel.create({
             name: req.body.name,
             email: req.body.email,
@@ -61,9 +68,9 @@ module.exports = {
           }
 
           const encryptedPassword =
-            req.body.provider !== "common"
-              ? encryptPassword(randomString)
-              : encryptPassword(req.body.password);
+            req.body.provider !== "common" ?
+            encryptPassword(randomString) :
+            encryptPassword(req.body.password);
           let data1 = await userModel.create({
             name: req.body.name,
             email: req.body.email,
@@ -75,8 +82,7 @@ module.exports = {
             provider: req.body.provider,
           });
           //nodemailer di sini
-          transport.sendMail(
-            {
+          transport.sendMail({
               from: "Renthaven Admin",
               to: req.body.email,
               subject: "Account verification",
@@ -161,7 +167,7 @@ module.exports = {
               message: "Username or password invalid",
             });
           }
-        } else if(data[0].role === "tenant") {
+        } else if (data[0].role === "tenant") {
           res.status(401).send({
             success: false,
             message: "The account is registered as a tenant, please use another account",
@@ -211,10 +217,15 @@ module.exports = {
   },
   verifyAcc: async (req, res) => {
     try {
-      const { otp, phone } = req.body;
+      const {
+        otp,
+        phone
+      } = req.body;
       console.log(req.decrypt);
       let user = await userModel.findOne({
-        where: { email: req.decrypt.email },
+        where: {
+          email: req.decrypt.email
+        },
       });
       console.log(user);
 
@@ -223,19 +234,28 @@ module.exports = {
           success: false,
           message: "OTP is not correct.",
         });
+      } else if (Date.now() > user.expiredOtp) {
+        return res.status(401).send({
+          success: false,
+          message: "OTP expired, please request send OTP to update your OTP code"
+        })
+      } else {
+        const phoneNum = user.provider == "common" ? user.phone : phone;
+        let userUpdate = await userModel.update({
+          isVerified: 1,
+          phone: phoneNum
+        }, {
+          where: {
+            email: req.decrypt.email
+          },
+        });
+        return res.status(200).send({
+          success: true,
+          message: "Your account is verified",
+          userUpdate,
+        });
       }
-      const phoneNum = user.provider == "common" ? user.phone : phone;
-      let userUpdate = await userModel.update(
-        { isVerified: 1, phone: phoneNum },
-        {
-          where: { email: req.decrypt.email },
-        }
-      );
-      res.status(200).send({
-        success: true,
-        message: "Your account is verified",
-        userUpdate,
-      });
+
     } catch (error) {
       console.log(error);
       return res.status(500).send({
@@ -247,26 +267,36 @@ module.exports = {
   },
   sendOtp: async (req, res) => {
     let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-    const { email } = req.decrypt;
+    const {
+      email
+    } = req.decrypt;
 
     try {
-      let user = await userModel.findOne({ where: { email } });
+      let user = await userModel.findOne({
+        where: {
+          email
+        }
+      });
 
       if (Date.now() > user.expiredOtp) {
-        let updateUser = await userModel.update(
-          {
-            countOtp: 0,
-          },
-          { where: { email } }
-        );
+        let updateUser = await userModel.update({
+          countOtp: 0,
+        }, {
+          where: {
+            email
+          }
+        });
       }
 
-      let updatedUser = await userModel.findOne({ where: { email } });
+      let updatedUser = await userModel.findOne({
+        where: {
+          email
+        }
+      });
 
       if (updatedUser.countOtp < 5) {
         let otp = generateOTP();
-        transport.sendMail(
-          {
+        transport.sendMail({
             from: "Renthaven Admin",
             to: email,
             subject: "Account verification",
@@ -283,14 +313,15 @@ module.exports = {
           }
         );
 
-        let userUpdate = await userModel.update(
-          {
-            otp,
-            countOtp: updatedUser.countOtp + 1,
-            expiredOtp: tomorrow,
-          },
-          { where: { email } }
-        );
+        let userUpdate = await userModel.update({
+          otp,
+          countOtp: updatedUser.countOtp + 1,
+          expiredOtp: tomorrow,
+        }, {
+          where: {
+            email
+          }
+        });
 
         return res.status(200).send({
           success: true,
@@ -312,7 +343,11 @@ module.exports = {
   },
   changePass: async (req, res) => {
     try {
-      const { oldPass, password, email } = req.body;
+      const {
+        oldPass,
+        password,
+        email
+      } = req.body;
       const data = await userModel.findAll({
         where: {
           email: email,
@@ -330,14 +365,13 @@ module.exports = {
 
       if (check != false) {
         const pass = encryptPassword(password);
-        const update = await userModel.update(
-          { password: pass },
-          {
-            where: {
-              email: email,
-            },
-          }
-        );
+        const update = await userModel.update({
+          password: pass
+        }, {
+          where: {
+            email: email,
+          },
+        });
         console.log(`update`, update);
         if (update) {
           return res.status(200).send({

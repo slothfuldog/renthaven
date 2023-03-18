@@ -18,13 +18,16 @@ import {
   Container,
   Divider,
   Spinner,
+  Text
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon, ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAction } from "../actions/userAction";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { MdOutlineDashboard } from "react-icons/md";
+import { VscCircleFilled } from "react-icons/vsc";
 
 const Links = ["Home", "Contact"];
 
@@ -46,6 +49,18 @@ const NavLink = ({ children }) => (
 function TenantHeader(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [propertyIsOpen, setPropertyIsOpen] = useState(false);
+  const [orderIsOpen, setOrderIsOpen] = useState(false);
+  const [reportIsOpen, setReportIsOpen] = useState(false);
+  const setPropertyOpenHandler = () => {
+    propertyIsOpen ? setPropertyIsOpen(false) : setPropertyIsOpen(true);
+  };
+  const setOrderOpenHandler = () => {
+    orderIsOpen ? setOrderIsOpen(false) : setOrderIsOpen(true);
+  };
+  const setReportOpenHandler = () => {
+    reportIsOpen ? setReportIsOpen(false) : setReportIsOpen(true);
+  };
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { email, name, role } = useSelector((state) => {
     return {
@@ -78,11 +93,11 @@ function TenantHeader(props) {
                 <Image boxSize="70px" src={logo} />
                 <Heading size="md">Renthaven</Heading>
               </HStack>
-              <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
+              {/* <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
                 {Links.map((link) => (
                   <NavLink key={link}>{link}</NavLink>
                 ))}
-              </HStack>
+              </HStack> */}
             </HStack>
             {/* ini tampilan kalau sudah login */}
             {props.loading === true ? (
@@ -202,9 +217,165 @@ function TenantHeader(props) {
                   {name.split(" ")[0]}
                 </Heading>
                 </HStack>
-                {Links.map((link) => (
-                  <NavLink key={link}>{link}</NavLink>
-                ))}
+                <Button
+        fontSize={"17px"}
+          variant="ghost"
+          color={"gray"}
+          colorScheme="green"
+          w="100%"
+          leftIcon={<MdOutlineDashboard />}
+          mt={3}
+          onClick={() => navigate("/tenant-dashboard", { replace: true })}
+        >
+          Dashboard
+        </Button>
+        <Box className="menu-list" rounded="md" w="100%" onClick={setPropertyOpenHandler}>
+          <Text ml={"50px"} fontWeight="600" fontSize={"17px"}>
+            Property{" "}
+            {propertyIsOpen ? (
+              <ChevronDownIcon w="20px" h="20px" ml={3} />
+            ) : (
+              <ChevronRightIcon w="20px" h="20px" ml ={3} />
+            )}{" "}
+          </Text>
+        </Box>
+        {propertyIsOpen ? (
+          <div>
+            <Box rounded="md" h={5} pl={2} pr={2} ml={"40px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled style={{ marginRight: "10px" }} />
+                Manage Properties
+              </Text>
+            </Box>
+            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled style={{ marginRight: "10px" }} />
+                Manage Rooms
+              </Text>
+            </Box>
+            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
+                Manage Categories
+              </Text>
+            </Box>
+          </div>
+        ) : (
+          ""
+        )}
+        <Box className="menu-list" mt={1} rounded="md" w="100%" onClick={setOrderOpenHandler}>
+          <Text ml={"50px"} fontWeight="600" fontSize={"17px"}>
+            Order List{" "}
+            {orderIsOpen ? (
+              <ChevronDownIcon w="20px" h="20px" ml={1} />
+            ) : (
+              <ChevronRightIcon w="20px" h="20px" ml ={1} />
+            )}{" "}
+          </Text>
+        </Box>
+        {orderIsOpen ? (
+          <div>
+            <Box rounded="md" h={5} pl={2} pr={2} ml={"30px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled style={{ marginRight: "10px" }} />
+                Booked Request
+              </Text>
+            </Box>
+            <Box rounded="md" h="38px" pl={2} pr={"16px"} mt={1} ml={"30px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled style={{ marginRight: "10px" }} />
+                Manage Booked
+              </Text>
+              <Text fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"} ml="23px">
+              Room
+              </Text>
+            </Box>
+            <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"30px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
+                History & Status
+              </Text>
+            </Box>
+          </div>
+        ) : (
+          ""
+        )}
+        <Box className="menu-list" mt={1} rounded="md" w="100%" onClick={setReportOpenHandler}>
+          <Text ml={"50px"} fontWeight="600" fontSize={"17px"}>
+            Report{" "}
+            {reportIsOpen ? (
+              <ChevronDownIcon w="20px" h="20px" ml={6} />
+            ) : (
+              <ChevronRightIcon w="20px" h="20px" ml ={6} />
+            )}{" "}
+          </Text>
+        </Box>
+        {reportIsOpen ? (
+          <div>
+            <Box rounded="md" h={5} pl={2} pr={"40px"} mt={1} ml={"35px"} className="menu-list">
+              <Text
+                fontSize={"13px"}
+                fontWeight={"600"}
+                color="gray"
+                display={"flex"}
+                flexDirection="row"
+                alignItems={"center"}
+              >
+                <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
+                View Reports
+              </Text>
+            </Box>
+          </div>
+        ) : (
+          ""
+        )}
                 <Flex justify="space-between" gap={3}>
                   <Button
                     minW="100%"

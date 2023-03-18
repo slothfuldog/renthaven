@@ -57,8 +57,8 @@ function Header(props) {
   const logoutHandler = () => {
     dispatch(logoutAction());
     localStorage.removeItem("renthaven1");
-    navigate("/signin", { replace: true });
     window.location.reload();
+    navigate("/signin", { replace: true });
   };
   useEffect(() => {}, [email]);
   return (

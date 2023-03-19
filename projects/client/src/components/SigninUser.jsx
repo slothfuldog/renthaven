@@ -115,10 +115,10 @@ const SigninUserPage = (props) => {
     })
       .then((res) => {
         if (res.data.success == true) {
-          navigate("/", { replace: true });
           localStorage.setItem("renthaven1", res.data.token);
           loginAction(res.data.result);
           window.location.reload();
+          navigate("/", { replace: true });
           setLoginLoading(false);
         } else if (res.data.success == false) {
           setAlert(

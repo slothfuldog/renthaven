@@ -107,6 +107,7 @@ const TenantDashboardPage = ({ isMobile }) => {
               </Table>
             </TableContainer>
           </Box>
+          <Divider orientation="vertical" />
           <Flex mt={2} direction={isMobile ? "column" : "row"}>
             <Box w={isMobile ? "100%" : "50%"}>
               <Flex justifyContent={"center"}>

@@ -9,19 +9,14 @@ import {
   useDisclosure,
   ScaleFade,
 } from "@chakra-ui/react";
-import { FcGoogle } from "react-icons/fc";
-import { CiFacebook } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useFormik } from "formik";
 import "../styles/login.css";
 import { useEffect, useState } from "react";
-import { auth, provider, providerFacebook } from "../config/firebase";
-import { signInWithPopup, getAuth, deleteUser } from "firebase/auth";
 import { loginSchema } from "../schemas/signinValidator";
 import Axios from "axios";
 import { loginAction } from "../actions/userAction";
-import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 
 const SigninTenantPage = (props) => {

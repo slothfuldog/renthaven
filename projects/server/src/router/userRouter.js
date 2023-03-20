@@ -1,5 +1,6 @@
 const { tokenVerify } = require("../config/encrypt");
 const { checkUser } = require("../config/validator");
+const { uploader } = require("../config/uploader");
 const { userController, tenantController } = require("../controller");
 const route = require("express").Router();
 
@@ -11,5 +12,14 @@ route.post("/signin/keep-login", tokenVerify, userController.keepLogin);
 route.post("/verify", tokenVerify, userController.verifyAcc);
 route.post("/sendotp", tokenVerify, userController.sendOtp);
 route.patch("/user/change-password", checkUser, userController.changePass);
+route.patch(
+  "/profile",
+  tokenVerify,
+  uploader("/imgProfile", "IMGPROFILE").array("images", 1),
+  userController.changeImgProfile
+);
+route.patch("/user", userController.update);
+route.post("/user/change-email", userController.sendOtpOldEmail);
+route.post("/user/verify-email", userController.verifyOtpOldEmail);
 
 module.exports = route;

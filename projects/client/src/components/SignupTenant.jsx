@@ -139,10 +139,10 @@ const SignupTenantPage = (props) => {
                 password: values.password,
               }).then((res) => {
                 if (res.data.success == true) {
-                  navigate("/verify", { replace: true });
                   localStorage.setItem("renthaven1", res.data.token);
                   loginAction(res.data.result);
                   window.location.reload();
+                  navigate("/verify", { replace: true });
                 }
               });
             });

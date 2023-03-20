@@ -68,11 +68,11 @@ reviewModel.belongsTo(transactionModel, {
   foreignKey: "transactionId",
 });
 
-orderListModel.hasMany(guestModel, {
+guestModel.hasMany(orderListModel, {
   foreignKey: "guestId",
 });
 
-guestModel.belongsTo(orderListModel, {
+orderListModel.belongsTo(guestModel, {
   as: "guest",
   foreignKey: "guestId",
 });

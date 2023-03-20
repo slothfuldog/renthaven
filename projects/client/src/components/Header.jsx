@@ -24,7 +24,6 @@ import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAction } from "../actions/userAction";
-import { useEffect } from "react";
 
 const Links = ["Home", "Contact"];
 
@@ -47,11 +46,11 @@ function Header(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { email, name, role } = useSelector((state) => {
+  const { email, name, profileImg } = useSelector((state) => {
     return {
       email: state.userReducer.email,
       name: state.userReducer.name,
-      role: state.userReducer.role,
+      profileImg: state.userReducer.profileImg,
     };
   });
   const logoutHandler = () => {
@@ -60,7 +59,6 @@ function Header(props) {
     window.location.reload();
     navigate("/signin", { replace: true });
   };
-  useEffect(() => {}, [email]);
   return (
     <Box shadow="sm">
       <Container maxW={"container.lg"}>
@@ -99,10 +97,9 @@ function Header(props) {
                   >
                     <HStack>
                       <Avatar
+                        bg="green.500"
                         size={"sm"}
-                        src={
-                          "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                        }
+                        src={`http://localhost:8000/${profileImg}`}
                       />
                       <Heading size="xs" textTransform="capitalize">
                         {name.split(" ")[0]}

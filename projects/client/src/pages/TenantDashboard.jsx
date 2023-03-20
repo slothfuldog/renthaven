@@ -1,3 +1,4 @@
+import Axios from "axios";
 import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
@@ -44,6 +45,43 @@ const TenantDashboardPage = ({ isMobile }) => {
 
     maintainAspectRatio: false,
   };
+  const [propertyData, setProperty] = useState([]);
+  const [transactionData, setTransactionData] = useState([]);
+  const getPropertiesData = async () => {
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+        const res = await Axios.post(
+          process.env.REACT_APP_API_BASE_URL + "/tenant/properties",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${getLocalStorage}`,
+            },
+          }
+        );
+        setProperty(res.data.result);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getTransactionData = async() =>{
+    try {
+      const getLocalStorage = localStorage.getItem("renthaven1");
+      if (getLocalStorage) {
+      const res = await Axios.post(process.env.REACT_APP_API_BASE_URL + "/tenant/transaction", {},{
+        headers:{
+          Authorization: `Bearer ${getLocalStorage}`
+        }
+      })
+      console.log(res)
+      setTransactionData(res.data.result)
+    }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const labels = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const data = {
     labels,
@@ -58,6 +96,8 @@ const TenantDashboardPage = ({ isMobile }) => {
   };
   useEffect(() => {
     document.title = "Renthaven || Tenant Dashboard";
+    getPropertiesData();
+    getTransactionData();
   }, []);
   return (
     <Box w="100%" display={"flex"} flexDirection={"column"}>
@@ -81,28 +121,19 @@ const TenantDashboardPage = ({ isMobile }) => {
                   <Th textAlign="center">STATUS</Th>
                 </Thead>
                 <Tbody>
-                  <Tr>
-                    <Td textAlign="center">1</Td>
+                  {transactionData.map((val, idx)=>{
+                    return <Tr>
+                    <Td textAlign="center">{idx + 1}</Td>
                     <Td textAlign="center">
-                      <Link _hover={{ color: "blue", textDecoration: "none" }}>54425890</Link>
+                      <Link _hover={{ color: "blue", textDecoration: "none" }}>{val.transactionId}</Link>
                     </Td>
-                    <Td textAlign="center">Adriano Calisto</Td>
-                    <Td textAlign="center">Suite Room</Td>
-                    <Td textAlign="center">No proof yet.</Td>
-                    <Td textAlign="center">Processing</Td>
+                    <Td textAlign="center">{val.guestName}</Td>
+                    <Td textAlign="center">{val.name}</Td>
+                    <Td textAlign="center">{val.payProofImg ? "See now" : "No proof Yet"}</Td>
+                    <Td textAlign="center">{val.status}</Td>
                   </Tr>
-                  <Tr>
-                    <Td textAlign="center">2</Td>
-                    <Td textAlign="center">
-                      <Link _hover={{ color: "blue", textDecoration: "none" }}>54425945</Link>
-                    </Td>
-                    <Td textAlign="center">Cecillia Dhila</Td>
-                    <Td textAlign="center">Twin Bed Room</Td>
-                    <Td textAlign="center">
-                      <Link _hover={{ color: "blue", textDecoration: "none" }}>PROOF UPLOADED</Link>
-                    </Td>
-                    <Td textAlign="center">Processing</Td>
-                  </Tr>
+                  })}
+                  
                 </Tbody>
               </Table>
             </TableContainer>
@@ -133,11 +164,15 @@ const TenantDashboardPage = ({ isMobile }) => {
                     <Th textAlign="center">STATUS</Th>
                   </Thead>
                   <Tbody>
-                    <Tr>
-                      <Td textAlign="center">1</Td>
-                      <Td textAlign="center">Grandprix Hotel</Td>
-                      <Td textAlign="center">Active</Td>
-                    </Tr>
+                    {propertyData.map((val, idx) => {
+                      if (idx <= 2) {
+                        return <Tr>
+                          <Td textAlign="center">{idx + 1}</Td>
+                          <Td textAlign="center">{val.name}</Td>
+                          <Td textAlign="center">{!val.isDeleted ? "Active" : "Deactivated"}</Td>
+                        </Tr>;
+                      }
+                    })}
                   </Tbody>
                 </Table>
               </TableContainer>

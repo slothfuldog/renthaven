@@ -7,18 +7,22 @@ import { useFormik } from "formik";
 import { profileSchema } from "../schemas/profileValidator";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
-import { nullLiteral } from "@babel/types";
+import EditUserNameBtn from "./EditUserNameBtn";
+import EditUserDobBtn from "./EditUserDobBtn";
+import EditUserGenBtn from "./EditUserGenBtn";
+import EditUserEmailBtn from "./EditUserEmailBtn";
 
 function ProfileForm(props) {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { email, name, gender, dob, provider } = useSelector((state) => {
+  const { email, name, gender, dob, provider, role } = useSelector((state) => {
     return {
       email: state.userReducer.email,
       name: state.userReducer.name,
       gender: state.userReducer.gender,
       dob: state.userReducer.dob,
       provider: state.userReducer.provider,
+      role: state.userReducer.role,
     };
   });
 
@@ -107,35 +111,60 @@ function ProfileForm(props) {
       <Flex direction="column" gap={8}>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Name</Text>
-          <Text textTransform="capitalize">{name}</Text>
-          <Button size="sm" colorScheme="green" variant="link">
-            Edit
-          </Button>
+          <Text>{name}</Text>
+          <EditUserNameBtn name={name} />
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Date of Birth</Text>
-          <Text>{dob === null ? `not set yet` : dob}</Text>
-          <Button size="sm" colorScheme="green" variant="link">
-            Edit
-          </Button>
+          <Text>
+            {dob === null
+              ? `not set yet`
+              : new Date(dob).toLocaleDateString("id", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+          </Text>
+          <EditUserDobBtn />
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Gender</Text>
-          <Text>{gender === null ? `not set yet` : gender}</Text>
-          <Button size="sm" colorScheme="green" variant="link">
-            Edit
-          </Button>
+          <Text textTransform="capitalize">{gender === null ? `not set yet` : gender}</Text>
+          <EditUserGenBtn />
         </Flex>
         <Flex direction="row" gap={4}>
           <Text minW="35%">Email</Text>
           <Text>{email}</Text>
-          {provider !== "common" ? null : (
-            <Button size="sm" colorScheme="green" variant="link">
-              Edit
-            </Button>
-          )}
+          {provider !== "common" ? null : <EditUserEmailBtn email={email} />}
         </Flex>
       </Flex>
+
+      {role !== "user" ? (
+        <>
+          <Divider mt="3" mb="2" />
+          <Heading mb={3} size="md">
+            Bank Information
+          </Heading>
+          <Flex direction="column" gap={8}>
+            <Flex direction="row" gap={4}>
+              <Text minW="35%">Bank Name</Text>
+              <Text>{name}</Text>
+            </Flex>
+            <Flex direction="row" gap={4}>
+              <Text minW="35%">Account Number</Text>
+              <Text>
+                {dob === null
+                  ? `not set yet`
+                  : new Date(dob).toLocaleDateString("id", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+              </Text>
+            </Flex>
+          </Flex>
+        </>
+      ) : null}
 
       {provider === "common" ? (
         <form onSubmit={handleSubmit}>
@@ -144,7 +173,9 @@ function ProfileForm(props) {
             <Heading size="md">Password</Heading>
             <Flex direction="row" align="center">
               {/* OLD PASSWORD */}
-              <Text minW="40%">Current Password</Text>
+              <Text noOfLines={{ base: 2, md: 1 }} minW="40%">
+                Current Password
+              </Text>
               <FormControl isInvalid={errors.oldPass && touched.oldPass ? true : false}>
                 <InputGroup>
                   <Input

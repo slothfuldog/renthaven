@@ -1,26 +1,15 @@
-.landing-banner .swiper-button-prev {
-  color: #0069a3;
-}
-
-.landing-banner .swiper-button-next {
-  color: #0069a3;
-}
-
 .landing-banner .swiper-slide {
   margin: auto;
 }
 
 .main-content .swiper-slide {
-  margin-top: 12px;
-  margin-bottom: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   padding-left: 12px;
   padding-right: 12px;
+  margin-bottom: 30px;
 }
 
-.main-content .swiper-button-next {
-  color: #0069a3;
-}
-
-.main-content .swiper-button-prev {
-  color: #0069a3;
+.main-content .swiper-pagination-bullet-active {
+  background-color: #38a169 !important;
 }

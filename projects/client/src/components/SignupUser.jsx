@@ -130,9 +130,9 @@ const SignupUserPage = (props) => {
                 confirmButtonColor: "#48BB78",
               })
                 .then((res) => {
-                  navigate("/verify", { replace: true });
                   localStorage.setItem("renthaven1", result.data.token);
                   window.location.reload();
+                  navigate("/verify", { replace: true });
                 })
                 .catch((e) => {
                   console.log(e);
@@ -182,10 +182,10 @@ const SignupUserPage = (props) => {
                 password: values.password,
               }).then((res) => {
                 if (res.data.success == true) {
-                  navigate("/verify", { replace: true });
                   localStorage.setItem("renthaven1", res.data.token);
                   loginAction(res.data.result);
                   window.location.reload();
+                  navigate("/verify", { replace: true });
                 }
               });
             });

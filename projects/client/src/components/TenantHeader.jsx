@@ -62,10 +62,11 @@ function TenantHeader(props) {
     reportIsOpen ? setReportIsOpen(false) : setReportIsOpen(true);
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { email, name, role } = useSelector((state) => {
+  const { email, name, profileImg, role } = useSelector((state) => {
     return {
       email: state.userReducer.email,
       name: state.userReducer.name,
+      profileImg: state.userReducer.profileImg,
       role: state.userReducer.role,
     };
   });
@@ -121,10 +122,9 @@ function TenantHeader(props) {
                   >
                     <HStack>
                       <Avatar
+                        bg="green.500"
                         size={"sm"}
-                        src={
-                          "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                        }
+                        src={`http://localhost:8000/${profileImg}`}
                       />
                       <Heading size="xs" textTransform="capitalize">
                         {name.split(" ")[0]}
@@ -210,19 +210,18 @@ function TenantHeader(props) {
           ) : null}
           {isOpen && email ? (
             <Box pb={4} display={{ md: "none" }}>
-              <Stack as={"nav"} spacing={4}>
+              <Stack  >
                 <HStack
-                  spacing={7}
+                w="100%"
+                display={"flex"}
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
                   _hover={{ cursor: "pointer" }}
                   onClick={() => navigate("/profile", { replace: true })}
                 >
-                  <Avatar
-                    size={"lg"}
-                    src={
-                      "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                    }
-                  />
-                  <Heading size="md" textTransform="capitalize">
+                  <Avatar bg="green.500" size={"xl"} src={`http://localhost:8000/${profileImg}`} />
+                  <Heading size="md" textTransform="capitalize" style={{marginLeft: "0px"}}>
                     {name.split(" ")[0]}
                   </Heading>
                 </HStack>
@@ -238,8 +237,15 @@ function TenantHeader(props) {
                 >
                   Dashboard
                 </Button>
-                <Box display={"flex"} justifyContent={"center"} className="menu-list" rounded="md" w="100%" onClick={setPropertyOpenHandler}>
-                  <Text ml={"50px"} fontWeight="600" fontSize={"17px"}>
+                <Box
+                  display={"flex"}
+                  justifyContent={"center"}
+                  className="menu-list"
+                  rounded="md"
+                  w="100%"
+                  onClick={setPropertyOpenHandler}
+                >
+                  <Text fontWeight="600" fontSize={"17px"}>
                     Property{" "}
                     {propertyIsOpen ? (
                       <ChevronDownIcon w="20px" h="20px" ml={3} />
@@ -249,8 +255,25 @@ function TenantHeader(props) {
                   </Text>
                 </Box>
                 {propertyIsOpen ? (
-                  <div style={{display: "flex", justifyContent:"center", alignItems:"center"}}>
-                    <Box rounded="md" h={5} pl={2} pr={2} ml={"40px"} className="menu-list">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
+                      rounded="md"
+                      h={5}
+                      pl={2}
+                      pr={2}
+                      className="menu-list"
+                    >
                       <Text
                         fontSize={"13px"}
                         fontWeight={"600"}
@@ -259,11 +282,21 @@ function TenantHeader(props) {
                         flexDirection="row"
                         alignItems={"center"}
                       >
-                        <VscCircleFilled style={{ marginRight: "10px" }} />
                         Manage Properties
                       </Text>
                     </Box>
-                    <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
+                      rounded="md"
+                      h={5}
+                      pl={2}
+                      pr={2}
+                      mt={1}
+                      className="menu-list"
+                    >
                       <Text
                         fontSize={"13px"}
                         fontWeight={"600"}
@@ -272,11 +305,21 @@ function TenantHeader(props) {
                         flexDirection="row"
                         alignItems={"center"}
                       >
-                        <VscCircleFilled style={{ marginRight: "10px" }} />
                         Manage Rooms
                       </Text>
                     </Box>
-                    <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"40px"} className="menu-list">
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
+                      rounded="md"
+                      h={5}
+                      pl={2}
+                      pr={2}
+                      mt={1}
+                      className="menu-list"
+                    >
                       <Text
                         fontSize={"13px"}
                         fontWeight={"600"}
@@ -285,7 +328,6 @@ function TenantHeader(props) {
                         flexDirection="row"
                         alignItems={"center"}
                       >
-                        <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                         Manage Categories
                       </Text>
                     </Box>
@@ -302,7 +344,7 @@ function TenantHeader(props) {
                   justifyContent={"center"}
                   display={"flex"}
                 >
-                  <Text ml={"50px"} fontWeight="600" fontSize={"17px"}>
+                  <Text fontWeight="600" fontSize={"17px"}>
                     Order List{" "}
                     {orderIsOpen ? (
                       <ChevronDownIcon w="20px" h="20px" ml={1} />
@@ -312,27 +354,23 @@ function TenantHeader(props) {
                   </Text>
                 </Box>
                 {orderIsOpen ? (
-                  <div style={{display: "flex", justifyContent:"center", alignItems:"center"}}>
-                    <Box rounded="md" h={5} pl={2} pr={2} ml={"30px"} className="menu-list">
-                      <Text
-                        fontSize={"13px"}
-                        fontWeight={"600"}
-                        color="gray"
-                        display={"flex"}
-                        flexDirection="row"
-                        alignItems={"center"}
-                      >
-                        <VscCircleFilled style={{ marginRight: "10px" }} />
-                        Booked Request
-                      </Text>
-                    </Box>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "column",
+                    }}
+                  >
                     <Box
+                      display={"flex"}
+                      flexDirection="column"
+                      alignItems="center"
                       rounded="md"
-                      h="38px"
+                      h={5}
                       pl={2}
-                      pr={"16px"}
-                      mt={1}
-                      ml={"30px"}
+                      pr={2}
+                      w="100%"
                       className="menu-list"
                     >
                       <Text
@@ -343,22 +381,21 @@ function TenantHeader(props) {
                         flexDirection="row"
                         alignItems={"center"}
                       >
-                        <VscCircleFilled style={{ marginRight: "10px" }} />
-                        Manage Booked
-                      </Text>
-                      <Text
-                        fontSize={"13px"}
-                        fontWeight={"600"}
-                        color="gray"
-                        display={"flex"}
-                        flexDirection="row"
-                        alignItems={"center"}
-                        ml="23px"
-                      >
-                        Room
+                        Booked Request
                       </Text>
                     </Box>
-                    <Box rounded="md" h={5} pl={2} pr={2} mt={1} ml={"30px"} className="menu-list">
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
+                      rounded="md"
+                      h={5}
+                      pl={2}
+                      pr={"16px"}
+                      mt={1}
+                      className="menu-list"
+                    >
                       <Text
                         fontSize={"13px"}
                         fontWeight={"600"}
@@ -367,7 +404,37 @@ function TenantHeader(props) {
                         flexDirection="row"
                         alignItems={"center"}
                       >
-                        <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
+                        Manage Booked Room
+                      </Text>
+                      <Text
+                        fontSize={"13px"}
+                        fontWeight={"600"}
+                        color="gray"
+                        display={"flex"}
+                        flexDirection="row"
+                        alignItems={"center"}
+                      ></Text>
+                    </Box>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
+                      rounded="md"
+                      h={5}
+                      pl={2}
+                      pr={2}
+                      mt={1}
+                      className="menu-list"
+                    >
+                      <Text
+                        fontSize={"13px"}
+                        fontWeight={"600"}
+                        color="gray"
+                        display={"flex"}
+                        flexDirection="row"
+                        alignItems={"center"}
+                      >
                         History & Status
                       </Text>
                     </Box>
@@ -384,7 +451,7 @@ function TenantHeader(props) {
                   onClick={setReportOpenHandler}
                   justifyContent={"center"}
                 >
-                  <Text ml={"50px"} fontWeight="600" fontSize={"17px"}>
+                  <Text fontWeight="600" fontSize={"17px"}>
                     Report{" "}
                     {reportIsOpen ? (
                       <ChevronDownIcon w="20px" h="20px" ml={6} />
@@ -394,14 +461,24 @@ function TenantHeader(props) {
                   </Text>
                 </Box>
                 {reportIsOpen ? (
-                  <div style={{display: "flex", justifyContent:"center", alignItems:"center"}}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "column",
+                    }}
+                  >
                     <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      w="100%"
                       rounded="md"
                       h={5}
                       pl={2}
                       pr={"40px"}
                       mt={1}
-                      ml={"35px"}
                       className="menu-list"
                     >
                       <Text
@@ -412,7 +489,6 @@ function TenantHeader(props) {
                         flexDirection="row"
                         alignItems={"center"}
                       >
-                        <VscCircleFilled fontSize="13px" style={{ marginRight: "10px" }} />
                         View Reports
                       </Text>
                     </Box>

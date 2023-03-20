@@ -41,8 +41,8 @@ const SigninTenantPage = (props) => {
           localStorage.setItem("renthaven1", res.data.token);
           loginAction(res.data.result);
           window.location.reload();
-          navigate("/tenant-dashboard", { replace: true });
           setLoginLoading(false);
+          navigate("/tenant-dashboard", { replace: true });
         } else if (res.data.success == false) {
           setAlert(
             <p>

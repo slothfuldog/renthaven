@@ -43,10 +43,10 @@ const SigninUserPage = (props) => {
           email: data._tokenResponse.email,
         }).then((res) => {
           if (res.data.success == true) {
-            navigate("/", { replace: true });
             localStorage.setItem("renthaven1", res.data.token);
             loginAction(res.data.result);
             window.location.reload();
+            navigate("/", { replace: true });
             setGoogleLoading(false);
           } else if (res.data.success == false) {
             const authenticate = getAuth();
@@ -80,10 +80,10 @@ const SigninUserPage = (props) => {
           email: data._tokenResponse.email,
         }).then((res) => {
           if (res.data.success == true) {
-            navigate("/", { replace: true });
             localStorage.setItem("renthaven1", res.data.token);
             loginAction(res.data.result);
             window.location.reload();
+            navigate("/", { replace: true });
             setFacebookLoading(false);
           } else if (res.data.success == false) {
             const authenticate = getAuth();

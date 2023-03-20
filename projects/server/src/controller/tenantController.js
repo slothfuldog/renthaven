@@ -1,8 +1,9 @@
 const { encryptPassword, createToken } = require("../config/encrypt");
-const { tenantModel, userModel } = require("../model");
-const {Op} = require("sequelize")
+const { tenantModel, userModel, propertyFcModel, propertyModel, transactionModel } = require("../model");
+const {Op, QueryTypes} = require("sequelize");
 const bcrypt = require("bcrypt");
 const { transport } = require("../config/nodemailer");
+const { dbSequelize } = require("../config/db");
 
 
 function generateOTP() {
@@ -59,7 +60,6 @@ module.exports = {
                         email: email
                     }
                 })
-                console.log(data2.userId, req.files)
                 const data3 = await tenantModel.create({
                     userId: data2.userId,
                     noKtp: noKtp,
@@ -106,8 +106,8 @@ module.exports = {
           ...data,
         });
         if (data.length > 0) {
-          if(data.role == "user"){
-            return res.status(401).send({
+          if(data[0].role === "user"){
+            return res.status(403).send({
               success: false,
               message: "The account is not a tenant, please login by using your tenant account"
             })
@@ -142,5 +142,62 @@ module.exports = {
         });
       }
     },
-    
+    getPropertyData: async (req, res) =>{
+      try {
+        const data = await userModel.findAll({
+          where: {
+            email: req.decrypt.email
+          }
+        })
+        const data1 = await tenantModel.findAll({
+          where:{
+            userId: data[0].userId
+          }
+        })
+        const data2 = await propertyModel.findAll({
+          where:{
+            tenantId: data1[0].tenantId
+          }
+        })
+        return res.status(200).send({
+          success: true,
+          result: data2
+        })
+      } catch (error) {
+        console.log(error)
+        return res.status(500).send({
+          success: false,
+          message: "Database Error"
+        })
+      }
+    },
+    getTransaction: async (req, res) =>{
+      try {
+        const data = await userModel.findAll({
+          where: {
+            email: req.decrypt.email
+          }
+        })
+        const data0 = await tenantModel.findAll({
+          where:{
+            userId: data[0].userId
+          }
+        })
+        let data2 = await dbSequelize.query(
+            `SELECT t.transactionId, t.payProofImg, u.name as guestName, ty.name, t.status from transactions as t INNER JOIN users as u on t.userId = u.userId
+            INNER JOIN orderlists as o on t.transactionId = o.transactionId INNER JOIN rooms as r on o.roomId = r.roomId INNER JOIN types as ty on r.typeId = ty.typeId 
+            INNER JOIN properties as p on r.propertyId = p.propertyId INNER JOIN tenants as ten on p.tenantId = ten.tenantId where ten.tenantId = ${data0[0].tenantId};`, {type: QueryTypes.SELECT}
+          )
+        return res.status(200).send({
+          success: true,
+          result : data2
+        })
+      } catch (error) {
+        console.log(error)
+        return res.status(500).send({
+          success: false,
+          message: "Database Error"
+        })
+      }
+    }
 }

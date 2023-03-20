@@ -26,12 +26,15 @@ const VerifyChecker = (props) => {
                 }
                 return(<Navigate to="/" />)
             }
+            else if(role != "tenant" && currentPath == "/tenant-dashboard"){
+                return(<Navigate to="/" />)
+            }
             if(role == "tenant" && (currentPath == "/")){
                 return(<Navigate to= "/tenant-dashboard" />)
             }
                 return props.children
             }
-        else if(currentPath == "/profile" || currentPath == "/verify"){
+        else if(currentPath == "/profile" || currentPath == "/verify" || currentPath == "/tenant-dashboard"){
             return (<Navigate to ="/" />)
         }else{
             return props.children

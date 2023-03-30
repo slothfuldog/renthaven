@@ -17,6 +17,14 @@ import Sidebar from "./components/Sidebar";
 import TenantDashboardPage from "./pages/TenantDashboard";
 import TenantHeader from "./components/TenantHeader";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import Property from "./pages/Property";
+import { setTenantAction } from "./actions/tenantAction";
+import PropertyCreateMenu from "./pages/PropertyCreateMenu";
+import AddProperty from "./pages/AddProperty";
+import AddPropertyRoom from "./pages/AddPropertyRoom";
+import PropertyFormEdit from "./components/PropertyFormEdit";
+import ManageCategories from "./pages/ManageCategories";
+import OrderHistory from "./pages/OrderHistory";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -46,7 +54,10 @@ function App() {
             },
           }
         );
-        console.log(res.data.result);
+        if (res.data.tenant !== undefined) {
+          dispatch(setTenantAction(res.data.tenant));
+          dispatch(setTenantAction(res.data.tenant.bank));
+        }
         dispatch(loginAction(res.data.result));
         localStorage.setItem("renthaven1", res.data.token);
         setLoading(false);
@@ -192,6 +203,48 @@ function App() {
                   </VerifyChecker>
                 }
               />
+              <Route
+                path="/property"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <Property />
+                  </VerifyChecker>
+                }
+              />
+              <Route
+                path="/property/new"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <PropertyCreateMenu />
+                  </VerifyChecker>
+                }
+              />
+              <Route
+                path="/property/new/building"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <AddProperty />
+                  </VerifyChecker>
+                }
+              />
+              <Route
+                path="/property/new/building-room"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <AddPropertyRoom />
+                  </VerifyChecker>
+                }
+              />
+              <Route
+                path="/property/edit"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <PropertyFormEdit />
+                  </VerifyChecker>
+                }
+              />
+              <Route path="/manage-categories" element={<ManageCategories />} />
+              <Route path="/orderlist" element={<OrderHistory />} />
               <Route path="/*" />
             </Routes>
           </div>

@@ -30,9 +30,25 @@ const transactionModel = dbSequelize.define("transactions", {
         type: DataTypes.STRING,
         defaultValue: "Waiting for payment"
     },
+    bankId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    bankAccountNum: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    totalGuest: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1
+    },
     specialReq: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    transactionExpired: {
+        type: DataTypes.DATE,
+        allowNull: false
     }
 })
 

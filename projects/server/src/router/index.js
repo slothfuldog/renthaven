@@ -1,10 +1,11 @@
 const userRouter = require("./userRouter");
 const categoryRouter = require("./categoryRouter");
 const tenantRouter = require("./tenantRouter");
-const paymentMethodRouter = require("./paymentMethodRouter");;
+const paymentMethodRouter = require("./paymentMethodRouter");
 const propertyRouter = require("./propertyRouter");
 const transactionRouter = require("./transactionRouter")
 const roomRouter = require("./roomRouter")
+const orderListRouter = require("./orderListRouter");
 module.exports = {
   userRouter,
   categoryRouter,
@@ -13,4 +14,5 @@ module.exports = {
   roomRouter,
   propertyRouter,
   paymentMethodRouter,
+  orderListRouter,
 };

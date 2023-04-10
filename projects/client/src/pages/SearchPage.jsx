@@ -93,6 +93,9 @@ const SearchPage = (props) => {
   const pageHandler = (e) => {
     setPage(e);
   };
+  const capacityHandler = (e) => {
+    setFilterCapacity(e);
+  };
   const cityHandler = (e) => {
     setFilterCity(e.label || e);
   };
@@ -140,6 +143,7 @@ const SearchPage = (props) => {
             provinceHandler={provinceHandler}
             nameHandler={nameHandler}
             setPage={pageHandler}
+            setCapacityHandler={capacityHandler}
             defaultProvince = {location.state == null? "" : location.state.defaultProvince ? location.state.defaultProvince : ""}
             defaultProvinceLabel = {location.state == null? "" :location.state.province? location.state.province:""}
             defaultCity = {location.state == null? "" :location.state.defaultCity? location.state.defaultCity:""}

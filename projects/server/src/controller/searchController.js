@@ -42,6 +42,7 @@ module.exports = {
       let filterName = "";
       let filterCity = "";
       let filterProvince = "";
+      let filterCapacity = "";
       let sortData = "";
       if (name) {
         filterName += `p.name LIKE '%${name}%'`
@@ -61,10 +62,10 @@ module.exports = {
         }
       }
       if (capacity) {
-        if (filterName === "" || filterCity === "" || filterProvince === "") {
-          filterCity += `c.city = '${city}'`
+        if (filterName === "" && filterCity === "" && filterProvince === "") {
+          filterCapacity += `t.capacity >= '${capacity}'`
         } else {
-          filterCity += ` AND c.city = '${city}'`
+          filterCapacity += ` AND t.capacity >= '${capacity}'`
         }
       }
       if (sortby) {
@@ -123,7 +124,7 @@ module.exports = {
         (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId))
       )
       INNER JOIN types AS t ON r.typeId = t.typeId
-      ${name || city || province ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince}
+      ${name || city || province || capacity ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
     GROUP BY 
       p.propertyId, 
       p.name, 
@@ -143,7 +144,8 @@ module.exports = {
           p.desc,
           p.image,
           (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-            AND ${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AS nominal
+            AND (${dbSequelize.escape(newStartDate)} BETWEEN sp.startDate AND sp.endDate) AND
+            (${dbSequelize.escape(newEndDate)} BETWEEN sp.startDate AND sp.endDate) ) AS nominal
         FROM 
           properties AS p 
           INNER JOIN categories AS c ON p.categoryId = c.categoryId
@@ -158,7 +160,8 @@ module.exports = {
               INNER JOIN types AS t ON r.typeId = t.typeId
               LEFT JOIN specialprices AS sp2 ON sp2.typeId = r.typeId AND (
                 sp2.nominal IS NOT NULL 
-                AND (${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate)
+                AND (${dbSequelize.escape(newStartDate)} BETWEEN sp2.startDate AND sp2.endDate) AND
+                (${dbSequelize.escape(newEndDate)} BETWEEN sp2.startDate AND sp2.endDate) 
               )
             WHERE 
               r.roomId NOT IN (
@@ -177,7 +180,7 @@ module.exports = {
             (min_prices.min_nominal IS NULL AND min_prices.min_price = (SELECT MIN(t.price) FROM types AS t WHERE t.typeId = r.typeId))
           )
           INNER JOIN types AS t ON r.typeId = t.typeId
-          ${name || city || province ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince}
+          ${name || city || province || capacity ? "WHERE" : ""} ${filterName} ${filterCity} ${filterProvince} ${filterCapacity}
         GROUP BY 
           p.propertyId, 
           p.name, 

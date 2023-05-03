@@ -46,6 +46,7 @@ import SearchCard from "./components/SearchCard";
 import SearchPage from "./pages/SearchPage";
 import PropertyAndRoom from "./pages/PropertyAndRoom";
 import PropertyAndRoomList from "./pages/PropertyAndRoomList";
+import Report from "./pages/Report";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -237,23 +238,7 @@ function App() {
                 path="/property/new"
                 element={
                   <VerifyChecker loading={loading}>
-                    <PropertyCreateMenu />
-                  </VerifyChecker>
-                }
-              />
-              <Route
-                path="/property/new/building"
-                element={
-                  <VerifyChecker loading={loading}>
                     <AddProperty />
-                  </VerifyChecker>
-                }
-              />
-              <Route
-                path="/property/new/building-room"
-                element={
-                  <VerifyChecker loading={loading}>
-                    <AddPropertyRoom />
                   </VerifyChecker>
                 }
               />
@@ -274,6 +259,7 @@ function App() {
               <Route path="/room/photos" element={<RoomPhoto />} />
               <Route path="/property-list" element={<PropertyAndRoom />} />
               <Route path="/property-list/room" element={<PropertyAndRoomList />} />
+              <Route path="/report" element={<Report />} />
               <Route path="/*" />
             </Routes>
           </div>

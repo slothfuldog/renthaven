@@ -8,6 +8,7 @@ const {
   tenantModel,
   orderListModel,
   transactionModel,
+  specialPriceModel,
 } = require("../model");
 const bcrypt = require("bcrypt");
 const { dbSequelize } = require("../config/db");
@@ -643,6 +644,72 @@ module.exports = {
       } else {
         return res.status(404).send({
           data: [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: {
+          [Op.and]: [
+            { roomId: req.params.roomId },
+            { propertyId: req.params.id },
+            { isDeleted: false },
+          ],
+        },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
+  getAllRoomData: async (req, res) => {
+    try {
+      const data = await roomModel.findAll({
+        include: [
+          {
+            model: typeModel,
+            as: "type",
+            required: true,
+            include: {
+              model: specialPriceModel,
+              as: "specialPrice",
+            },
+          },
+          {
+            model: roomAvailModel,
+            as: "roomAvail",
+          },
+        ],
+        where: { [Op.and]: [{ isDeleted: false }, { propertyId: req.params.id }] },
+      });
+      if (data.length > 0) {
+        return res.status(200).send({
+          data,
         });
       }
     } catch (error) {

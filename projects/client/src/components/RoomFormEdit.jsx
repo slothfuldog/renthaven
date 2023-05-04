@@ -498,7 +498,7 @@ function RoomFormEdit(props) {
                   min={2}
                   max={10}
                   w={"100px"}
-                  onChange={(e) => setGuest(e.target.value)}
+                  onChange={(e) => setGuest(e)}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -604,7 +604,7 @@ function RoomFormEdit(props) {
                   min={2}
                   max={10}
                   w={"100px"}
-                  onChange={(e) => setGuest(e.target.value)}
+                  onChange={(e) => setGuest(e)}
                 >
                   <NumberInputField />
                   <NumberInputStepper>

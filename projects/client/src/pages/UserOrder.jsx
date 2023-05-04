@@ -137,8 +137,12 @@ function UserOrder(props) {
             transaction={data.transaction}
             property={data.room.property}
             type={data.room.type}
+            selectedStatus={selectedStatus}
+            page={page}
             btnDetails={onBtnDetails}
             key={idx}
+            getData={getUserData}
+            userData={userData}
           />
         );
       })

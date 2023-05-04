@@ -9,17 +9,20 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import CalendarDateRange from "../components/CalendarDateRange";
 import { useDispatch, useSelector } from "react-redux";
 import "../styles/imageGallery.css";
+import Reviews from "../components/Reviews";
 
 function PropertyDetail(props) {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useSearchParams();
   const dispatch = useDispatch();
+  const [noReview, setNoReview] = useState(false);
   const [notAvailableRoom , setNotAvailableRoom] = useState([]);
   const [types, setTypes] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [property, setProperty] = useState([]);
   const [tenant, setTenant] = useState([]);
+  const [reviewsData, setReviewsData] = useState([]);
   const [userTenant, setUserTenant] = useState("");
   const {email, startDate, endDate} = useSelector(state => {
     return{
@@ -62,7 +65,6 @@ function PropertyDetail(props) {
       console.log(error)
     }
   }
-  console.log(types)
   const renderRoom = () =>{
       return types.map((val, idx )=>{
         return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} typeImg={types.typeImg} isAvailable = {true} />
@@ -73,9 +75,25 @@ function PropertyDetail(props) {
       return <RoomCard key={idx} data={val} id={searchQuery.get('id')} startDate={checkinDate} endDate={checkoutDate} isAvailable = {false} />
     })
   }
+  const getReviewData = async () =>{
+    try {
+      const res = await Axios.get(process.env.REACT_APP_API_BASE_URL + `/reviews/all?id=${searchQuery.get("id")}`)
+      if(res.data.result.length > 0){
+        setReviewsData(res.data.result)
+      }else{
+        setNoReview(true)
+      }
+    } catch (error) {
+      console.log(error)
+      setNoReview(true)
+    }
+  }
   useEffect(() =>{
     getData();
   },[startDate, endDate])
+  useEffect(() =>{
+    getReviewData()
+  }, [])
   return (
     <Container maxW={{ base: "container", md: "container.lg" }}>
       <Flex direction="column" mb={3}>
@@ -106,6 +124,13 @@ function PropertyDetail(props) {
         <Heading size="sm">Available Rooms at "Hotel Name"</Heading>
         {renderRoom()}
         {notAvailableRoom.length > 0 ? renderNotAvailRoom() : ""}
+      </Flex>
+      <Flex direction={"column"} mb={"20px"}>
+        <Text fontWeight={"700"} fontSize="18px">Reviews</Text>
+          {!noReview? reviewsData.map((val,idx) =>{
+            return <Reviews data={val} key={idx} />
+          }):
+        <Text>No Review</Text>}
       </Flex>
     </Container>
   );

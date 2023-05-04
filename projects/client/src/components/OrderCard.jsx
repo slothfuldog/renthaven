@@ -49,7 +49,6 @@ function OrderCard(props) {
         setReviews(response.data.data[0].desc);
         setCurrentReviews(response.data.data[0].desc);
       }
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }

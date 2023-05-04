@@ -18,21 +18,12 @@ module.exports = {
   getNecessaryData: async (req, res) => {
     try {
       //get neccessary data for transaction page
-      console.log(new Date(req.body.startDate), new Date(req.body.endDate));
-      const data = await dbSequelize.query(
-        `select p.image, t.typeImg, p.name, t.name as typeName, t.capacity, pay.bankId, pay.bankName, pay.bankLogo, ten.bankAccountNum as accountNum, t.price, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
-        AND (${dbSequelize.escape(
-          new Date(req.body.startDate)
-        )} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(
-          new Date(req.body.endDate)
-        )} BETWEEN sp.startDate AND sp.endDate)) as nominal from properties as p INNER JOIN rooms as r on p.propertyId = r.propertyId
-            INNER JOIN types as t on r.typeId = t.typeId INNER JOIN tenants as ten on p.tenantId = ten.tenantId INNER JOIN paymentmethods as pay on ten.bankId = pay.bankId where p.propertyId = ${
-              req.query.id
-            } and t.typeId = ${req.body.typeId}`,
-        {
-          type: QueryTypes.SELECT,
-        }
-      );
+      console.log(new Date(req.body.startDate), new Date(req.body.endDate))
+      const data = await dbSequelize.query(`select p.image, t.typeImg, p.name, t.name as typeName, t.capacity, pay.bankId, pay.bankName, pay.bankLogo, ten.bankAccountNum as accountNum, t.price, (SELECT sp.nominal from specialprices as sp where sp.typeId = t.typeId 
+        AND (${dbSequelize.escape(new Date(req.body.startDate))} BETWEEN sp.startDate AND sp.endDate) AND (${dbSequelize.escape(new Date(req.body.endDate))} BETWEEN sp.startDate AND sp.endDate)) as nominal from properties as p INNER JOIN rooms as r on p.propertyId = r.propertyId
+            INNER JOIN types as t on r.typeId = t.typeId INNER JOIN tenants as ten on p.tenantId = ten.tenantId INNER JOIN paymentmethods as pay on ten.bankId = pay.bankId where p.propertyId = ${req.query.id} and t.typeId = ${req.body.typeId}`, {
+        type: QueryTypes.SELECT
+      })
       // const data1 = await specialPriceModel.findAll()
       return res.status(200).send({
         success: true,

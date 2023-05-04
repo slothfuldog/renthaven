@@ -220,7 +220,7 @@ function UserOrder(props) {
                 <Flex alignItems="center" justifyContent="center">
                   <Image
                     height="500px"
-                    src={process.env.REACT_APP_API_BASE_IMG_URL + transaction.payProofImg}
+                    src={process.env.REACT_APP_BASE_IMG_URL + transaction.payProofImg}
                   />
                 </Flex>
               </Flex>

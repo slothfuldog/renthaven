@@ -51,7 +51,7 @@ function SearchProperty({
   const getProvinceData = async () => {
     try {
       let response = await Axios.get(
-        "http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+        "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
       );
 
       const provinceOption = response.data.map((val, idx) => {
@@ -87,7 +87,7 @@ function SearchProperty({
     if (province.length !== 0 || defaultProvince) {
       try {
         let response = await Axios.get(
-          `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
+          `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
         );
         const cityOption = response.data.map((val, idx) => {
           return { value: val.id, label: val.name };
@@ -168,7 +168,11 @@ function SearchProperty({
         <VStack alignItems="start" spacing={7}>
           <Flex direction="column" gap={6} minW="100%">
             <FormControl>
-              <FormLabel>Name</FormLabel>
+            <Box minW="100%">
+              <FormLabel>Date</FormLabel>
+              <CalendarDateRange />
+            </Box>
+              <FormLabel mt={4}>Name</FormLabel>
               <Box ref={wrapperRef}>
                 <Input
                   placeholder="Input property name here"
@@ -254,10 +258,7 @@ function SearchProperty({
             ) : null}
           </Flex>
           <Stack direction={{ base: "column" }} spacing={5} alignItems={{ base: "start" }} w="100%">
-            <Box minW="100%">
-              <FormLabel>Date</FormLabel>
-              <CalendarDateRange />
-            </Box>
+           
             <Box>
               {/* <FormLabel>Capacity</FormLabel>
               <NumberInput

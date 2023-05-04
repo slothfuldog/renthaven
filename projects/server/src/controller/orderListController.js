@@ -462,8 +462,55 @@ module.exports = {
       });
     } catch (error) {
       return res.status(500).send({
+        success:  false,
+        message:  "Database error",
+      });
+    }
+  },
+  getTenantLineChart: async (req, res) => {
+    try {
+      const today = new Date().getDay();
+      const startDateDiff = today == 0 ? 0 : 1 - today;
+      const endDateDiff = 7 - today;
+      const startDate = new Date(
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime() + 86400000 * startDateDiff
+      ).getTime();
+      const endDate = new Date(
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime() + 86400000 * endDateDiff
+      ).getTime();
+      const filterData = [
+        {
+          startDate: {
+            [Op.and]: {[Op.gte]: startDate,
+            }
+          },
+        },
+        {
+          endDate: {
+            [Op.lte]: endDate,
+          },
+        },
+      ];
+      const data = await dbSequelize.query(`
+        SELECT DATE(o.createdAt) as orderDate, SUM(o.price) as price FROM orderlists as o
+        INNER JOIN transactions as tran ON o.transactionId = tran.transactionId
+        INNER JOIN rooms as r ON r.roomId = o.roomId
+        INNER JOIN properties as p ON r.propertyId = p.propertyId
+        INNER JOIN tenants as ten ON ten.tenantId = p.tenantId
+        INNER JOIN users as u ON u.userId = ten.userId
+        WHERE u.email = ${dbSequelize.escape(req.decrypt.email)} AND ((tran.checkinDate > ${dbSequelize.escape(new Date(startDate))}) AND (tran.checkoutDate < ${dbSequelize.escape(new Date(endDate))}))
+        group by orderDate; 
+      `, {type: QueryTypes.SELECT});
+      //
+      return res.status(200).send({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({
         success: false,
-        message: "Database error",
+        message: "Database Error."
       });
     }
   },

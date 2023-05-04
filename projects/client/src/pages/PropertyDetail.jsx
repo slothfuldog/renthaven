@@ -24,6 +24,7 @@ function PropertyDetail(props) {
   const [tenant, setTenant] = useState([]);
   const [reviewsData, setReviewsData] = useState([]);
   const [userTenant, setUserTenant] = useState("");
+  const [image, setImage] = useState([]);
   const {email, startDate, endDate} = useSelector(state => {
     return{
       email: state.userReducer.email,
@@ -52,12 +53,19 @@ function PropertyDetail(props) {
       let roomAvail = res.data.room.filter(val =>{
         return !roomNotAvail.includes(val)
       })
+      let images = [];
+      images.push(process.env.REACT_APP_BASE_IMG_URL + res.data.property.image)
+      res.data.type.map(val => {
+        images.push(process.env.REACT_APP_BASE_IMG_URL + val.typeImg)
+      })
+
       setTypes(res.data.type);
       setRooms(roomAvail);
       setProperty(res.data.property)
       setCategories(res.data.category)
       setTenant(res.data.tenant)
       setUserTenant(res.data.userTenant)
+      setImage(images)
       if(res.data.notAvailRooms.length > 0 && res.data.notAvailRooms != undefined){
         setNotAvailableRoom(res.data.notAvailRooms);
       }
@@ -102,9 +110,9 @@ function PropertyDetail(props) {
           <Icon as={IoLocationSharp} /> {categories.city}
         </Text>
       </Flex>
-      <PropertyGallery />
+      <PropertyGallery image = {image} />
       <Flex align="center" gap={3} mt={5}>
-        <Avatar src={process.env.REACT_APP_API_BASE_IMG_URL +`${userTenant.profileImg}`} bg="green.500" size="md" />
+        <Avatar src={`${process.env.REACT_APP_BASE_IMG_URL}${userTenant.profileImg}`} bg="green.500" size="md" />
         <Heading size="md">{userTenant.name}</Heading>
       </Flex>
       <Divider my={5} />

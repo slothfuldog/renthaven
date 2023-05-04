@@ -243,7 +243,7 @@ function OrderCard(props) {
           <Flex gap={3}>
             <Image
               boxSize={{ base: "100px", md: "150px" }}
-              src={process.env.REACT_APP_API_BASE_IMG_URL + image}
+              src={process.env.REACT_APP_BASE_IMG_URL + image}
               fallbackSrc="https://via.placeholder.com/150"
             />
             <Flex direction="column">

@@ -296,10 +296,22 @@ function RoomFormEdit(props) {
 
       return () => URL.revokeObjectURL(objectUrl);
     } else {
-      setPreview(process.env.REACT_APP_API_BASE_IMG_URL + `${values.image}`);
+      setPreview(process.env.REACT_APP_BASE_IMG_URL + `${values.image}`);
     }
   }, [values.image, addType]);
-
+  useEffect(() =>{
+    if(!location.state){
+      Swal.fire({
+        icon: "error",
+        title: `Something went wrong.`,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        timer: 3000,
+      }).then(resp =>{
+        navigate("/room", {replace: true})
+      })
+    }
+  }, [])
   return (
     <Box px={{ base: "0", md: "20" }} pb={5} m={{ base: "15px", md: "" }}>
       <Heading mb={{ base: "30px", md: "5" }} textAlign={{ base: "center", md: "left" }}>
@@ -411,7 +423,7 @@ function RoomFormEdit(props) {
                   )}
                 </Flex>
                 <Image
-                  src={process.env.REACT_APP_API_BASE_IMG_URL + chosenImage}
+                  src={process.env.REACT_APP_BASE_IMG_URL + chosenImage}
                   w="300px"
                   h="150px"
                   objectFit={"cover"}
@@ -498,7 +510,8 @@ function RoomFormEdit(props) {
                   min={2}
                   max={10}
                   w={"100px"}
-                  onChange={(e) => setGuest(e)}
+                  focusBorderColor="#48BB78"
+                  onChange={(e) => setGuest(e.target.value)}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -604,7 +617,8 @@ function RoomFormEdit(props) {
                   min={2}
                   max={10}
                   w={"100px"}
-                  onChange={(e) => setGuest(e)}
+                  focusBorderColor="#48BB78"
+                  onChange={(e) => setGuest(e.target.value)}
                 >
                   <NumberInputField />
                   <NumberInputStepper>

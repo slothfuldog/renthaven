@@ -10,6 +10,9 @@ const searchRouter = require("./searchRouter");
 const reviewRouter = require("./reviewRouter")
 const propReviewRouter = require("./propReviewRouter");
 const userOderRouter = require("./userOrderRouter");
+const roomAvailabilityRouter = require("./roomAvailabilityRouter");
+const specialPriceRouter = require("./specialPriceRouter");
+
 module.exports = {
   userRouter,
   categoryRouter,
@@ -22,5 +25,7 @@ module.exports = {
   searchRouter,
   propReviewRouter,
   userOderRouter,
-  reviewRouter
+  reviewRouter,
+  roomAvailabilityRouter,
+  specialPriceRouter
 };

@@ -47,6 +47,7 @@ import SearchPage from "./pages/SearchPage";
 import PropertyAndRoom from "./pages/PropertyAndRoom";
 import PropertyAndRoomList from "./pages/PropertyAndRoomList";
 import Report from "./pages/Report";
+import PropertyForm from "./components/PropertyForm";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -250,11 +251,19 @@ function App() {
                   </VerifyChecker>
                 }
               />
+              <Route
+                path="/property/new/building"
+                element={
+                  <VerifyChecker loading={loading}>
+                    <PropertyForm />
+                  </VerifyChecker>
+                }
+              />
               <Route path="/manage-categories" element={<ManageCategories />} />
               <Route path="/orderlist" element={<OrderHistory />} />
               <Route path="/room" element={<RoomListPage />} />
               <Route path="/room/edit" element={<RoomFormEdit />} />
-              <Route path="/room/new" element={<RoomCreateMenu />} />
+              {/* <Route path="/room/new" element={<RoomCreateMenu />} /> */}
               <Route path="/room/new/type" element={<RoomForm />} />
               <Route path="/room/photos" element={<RoomPhoto />} />
               <Route path="/property-list" element={<PropertyAndRoom />} />

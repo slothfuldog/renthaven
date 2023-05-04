@@ -79,8 +79,9 @@ function RoomForm(props) {
             confirmButtonText: "OK",
             confirmButtonColor: "#48BB78",
             timer: 3000,
+            reverseButtons: true
           }).then((res) => {
-            navigate("/property/new", { replace: true, state: { data: propData } });
+            navigate("/property/new/building", { replace: true, state: { data: propData } });
             window.scrollTo(0, 0);
           });
         }
@@ -88,6 +89,16 @@ function RoomForm(props) {
     } catch (e) {
       console.log(e);
       setIsPropAvail(false);
+      Swal.fire({
+        icon: "error",
+        title: `${e.response.data.message}`,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#48BB78",
+        timer: 5000
+      }).then(res =>{
+          navigate("/property/new/building", {replace: true, state:{data: propData}})
+          window.scrollTo(0,0);
+      })
     }
   };
   const getTypeData = async (propId) => {
@@ -375,7 +386,7 @@ function RoomForm(props) {
                   Type Detail
                 </Text>
                 <Image
-                  src={process.env.REACT_APP_API_BASE_IMG_URL + chosenType.typeImg}
+                  src={process.env.REACT_APP_BASE_IMG_URL + chosenType.typeImg}
                   w="300px"
                   h="150px"
                   objectFit={"cover"}
@@ -466,6 +477,7 @@ function RoomForm(props) {
                   min={2}
                   max={10}
                   w={"100px"}
+                  focusBorderColor="#48BB78"
                   onChange={(e) => setGuest(e)}
                 >
                   <NumberInputField />

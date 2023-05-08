@@ -1,4 +1,4 @@
-require("dotenv/config");
+require("dotenv").config({path: path.resolve(__dirname, "../.env")})
 process.env.TZ = "Asia/Jakarta";
 const moment = require("moment-timezone");
 moment.tz.setDefault("Asia/Jakarta");

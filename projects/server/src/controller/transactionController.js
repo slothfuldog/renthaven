@@ -280,7 +280,7 @@ module.exports = {
         return `(${checkIn[idx]})`;
       });
       const getTimes = times.join(" OR ");
-      
+
       const getRooms =
         getRoom.length > 0
           ? await dbSequelize.query(
@@ -344,9 +344,12 @@ module.exports = {
           await dbSequelize.query(
             `UPDATE transactions SET status = "Cancelled" WHERE transactionId = ${val.transactionId}`
           );
-          if(getRoomAvail.length > 0)
-              await dbSequelize.query(`UPDATE roomavailabilities ${getTime[index]}
-              WHERE raId = ${getRoomAvail[index].raId}`);
+          if (getRoomAvail.length > 0) {
+            getRoomAvail.map(async (value, idx) => {
+              await dbSequelize.query(`UPDATE roomavailabilities ${getTime[idx]}
+              WHERE raId = ${value.raId}`);
+            });
+          }
         }
       });
     });

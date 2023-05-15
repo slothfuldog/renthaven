@@ -9,7 +9,7 @@ import "react-date-range/dist/theme/default.css";
 
 import { Input, InputGroup, InputLeftElement, Box } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
-import { subDays } from "date-fns";
+import { subDays, addYears } from "date-fns";
 import { useSelector } from "react-redux";
 
 function CalendarStartDate(props) {
@@ -54,7 +54,7 @@ function CalendarStartDate(props) {
     document.addEventListener("keydown", hideOnEscape, true);
     document.addEventListener("click", hideOnClickOutside, true);
     const date = new Date();
-    setMaxDate(date);
+    setMaxDate(addYears(new Date(date), 1));
     setMinDate(new Date(createdAt));
   }, []);
 
